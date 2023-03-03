@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  proxy:
+    build: ./
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: 1
+      TARGET_IPS: "ticcket, capp, fixme"
+      TARGET_PORTS: "1337,80,8080"
+      LISTEN_PORTS: "1337,80,8080"
+      KEYWORD: "EH VOLEVIH"
+    ports:
+      - 1337:1337
+      - 8080:8080
+      - 80:80
+    volumes:
+      - "./proxy:/src/proxy"
+    container_name: proxy
+    # mem_limit: 512m
+    # mem_reservation: 128M
+    # cpus: 0.5
+
+networks:
+  default:
+    name: ctf_network
+
+# -------- TO TEST WITH HIGH AMOUNT OF REQUEST ---------
+# - i=0 ; while true ; do curl -o /dev/null -s localhost:8080/hackerino ; if [ $? -ne 0 ] ; then echo $i ; break ; fi ; i=$(($i+1)) ; echo -en "$i \r" ; done
+# - i=0 ; while true ; do echo "hackerino" | nc -w 0 localhost 1337 ; if [ $? -ne 0 ] ; then echo $i ; break ; fi ; i=$(($i+1)) ; echo -en "$i \r" ; done
+
+# networks:
+#   default:
+#     name: ctf_network
+#     external: true
+
+# _OUT : TO CLIENT
+# _IN  : TO SERVICE
