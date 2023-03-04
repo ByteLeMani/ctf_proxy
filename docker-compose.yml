@@ -25,10 +25,6 @@ networks:
   default:
     name: ctf_network
 
-# -------- TO TEST WITH HIGH AMOUNT OF REQUEST ---------
-# - i=0 ; while true ; do curl -o /dev/null -s localhost:8080/hackerino ; if [ $? -ne 0 ] ; then echo $i ; break ; fi ; i=$(($i+1)) ; echo -en "$i \r" ; done
-# - i=0 ; while true ; do echo "hackerino" | nc -w 0 localhost 1337 ; if [ $? -ne 0 ] ; then echo $i ; break ; fi ; i=$(($i+1)) ; echo -en "$i \r" ; done
-
 # networks:
 #   default:
 #     name: ctf_network

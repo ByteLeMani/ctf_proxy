@@ -20,10 +20,9 @@ class Module():
     
     def execute(self, data):
         """
-        Returns two values, data and the attack name.
-        If data is None, the socket gets closed.
-        If data is not None, the content of data will be forwarded to the target ip.
-        If an attack is found, its name (attack.__name__) and packet content will be saved into the db.
+        Returns a string that identifies the attack name.
+        If None is returned, no attack has been identified inside data.
+        If a string is returned, an attack has been identified and the socket will be closed.
         """
         attacks = []            # [self.SQLi, self.XSS]
         for attack in attacks:

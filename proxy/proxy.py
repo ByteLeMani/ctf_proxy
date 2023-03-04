@@ -391,8 +391,8 @@ def main():
             for args_process in args_processes:
                 value = 0
                 for line in lines:
-                    if args_process.target_ip in line:
-                        value = int(line.split()[-1])
+                    if args_process.target_ip == line.split(":")[0].strip():
+                        value = int(line.split()[-1].strip())
                 nPackets.append(Value('i', value))
     except FileNotFoundError:
         print("Log file not found")
