@@ -63,7 +63,7 @@ You can monitor the file by using:
 ```
 watch cat log.txt
 ```
-Any relevant information will be printed to stdout. 
+Any relevant information will be printed to stdout. Set ```VERBOSE``` to ```true``` for more info.
 
 If you're using the Docker version, you can inspect the docker logs to access them: 
 ```

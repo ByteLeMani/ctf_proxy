@@ -20,6 +20,7 @@ TARGET_IPS = os.getenv("TARGET_IPS", default="").replace(" ", "").split(",")
 TARGET_PORTS = os.getenv("TARGET_PORTS", default="").replace(" ", "").split(",")
 LISTEN_PORTS = os.getenv("LISTEN_PORTS", default="").replace(" ", "").split(",")
 KEYWORD = os.getenv("KEYWORD", default="EH VOLEVIH")
+VERBOSE = True if os.getenv("VERBOSE", default="false") == "true" else False
 
 class fileWatchdog(RegexMatchingEventHandler):
     def __init__(self, regexes, in_module, out_module, name):
@@ -55,8 +56,9 @@ def parse_args():
                         help='ports to listen on')
     
     parser.add_argument('-k', '--keyword', dest='keyword',
-                        default=KEYWORD, help='Keyword to use as a response for malicious packets to quickly find them in a pcap file'
-                        )
+                        default=KEYWORD, 
+                        help='Keyword to use as a response for malicious packets to' + 
+                        'quickly find them in a pcap file')
 
     parser.add_argument('-pi', '--proxy-ip', dest='proxy_ip', default=None,
                         help='IP address/host name of proxy')
@@ -67,7 +69,7 @@ def parse_args():
     parser.add_argument('-pt', '--proxy-type', dest='proxy_type', default='SOCKS5', choices=['SOCKS4', 'SOCKS5', 'HTTP'],
                         type = str.upper, help='proxy type. Options are SOCKS5 (default), SOCKS4, HTTP')
 
-    parser.add_argument('-v', '--verbose', dest='verbose', default=False,
+    parser.add_argument('-v', '--verbose', dest='verbose', default=VERBOSE,
                         action='store_true',
                         help='More verbose output of status information')
 
@@ -98,6 +100,7 @@ def generate_module_file(targetIPs):
             pass
         modules = os.listdir(basePath)
         for name in targetIPs:
+            name = name.replace(".", "-")
             if name+"_in.py" not in modules:
                 #output file to write the result to
                 fout_in = open(basePath + name + "_in.py", "wt+")
@@ -323,10 +326,11 @@ def vprint(msg, is_verbose):
 
 def serviceFunction(args_process, count):
     # print(args_process.target_ip)
-    in_module, out_module = import_modules(args_process.target_ip, False)
+    module_name = args_process.target_ip.replace(".", "-")
+    in_module, out_module = import_modules(module_name, False)
     
     # this event handler will reload modules on changes
-    watchdog_handler = fileWatchdog(regexes=[f".*{args_process.target_ip}.*\.py"], in_module = in_module, out_module = out_module, name = args_process.target_ip)            
+    watchdog_handler = fileWatchdog(regexes=[f".*{module_name}.*\.py"], in_module = in_module, out_module = out_module, name = module_name)            
     observer = Observer()
     observer.schedule(watchdog_handler, path='./proxymodules/services/', recursive=False)
     observer.start()

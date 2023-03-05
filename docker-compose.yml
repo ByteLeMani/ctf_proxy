@@ -10,6 +10,7 @@ services:
       TARGET_PORTS: "9090,9091,9092"
       LISTEN_PORTS: "8080,8081,8082"
       KEYWORD: "EXAMPLEKEYWORD"
+      VERBOSE: "false"
     ports:
       - 8080:8080
       - 8081:8081
