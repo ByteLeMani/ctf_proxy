@@ -6,29 +6,18 @@ services:
     restart: unless-stopped
     environment:
       PYTHONUNBUFFERED: 1
-      TARGET_IPS: "ticcket, capp, fixme"
-      TARGET_PORTS: "1337,80,8080"
-      LISTEN_PORTS: "1337,80,8080"
-      KEYWORD: "EH VOLEVIH"
+      TARGET_IPS: "example1, example2, 192.168.1.100"
+      TARGET_PORTS: "9090,9091,9092"
+      LISTEN_PORTS: "8080,8081,8082"
+      KEYWORD: "EXAMPLEKEYWORD"
     ports:
-      - 1337:1337
       - 8080:8080
-      - 80:80
+      - 8081:8081
+      - 8082:8082
     volumes:
       - "./proxy:/src/proxy"
     container_name: proxy
-    # mem_limit: 512m
-    # mem_reservation: 128M
-    # cpus: 0.5
 
 networks:
   default:
     name: ctf_network
-
-# networks:
-#   default:
-#     name: ctf_network
-#     external: true
-
-# _OUT : TO CLIENT
-# _IN  : TO SERVICE
