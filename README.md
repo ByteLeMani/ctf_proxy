@@ -1,6 +1,6 @@
 # ctf_proxy - A TCP proxy for intercepting and dropping malicious attacks
 
-This tool is purposely made for Attack/Defence CTF competitions. It opens as many listening socket as there are services, receives packets to be analyzed by custom filters that drop or forward them towards the services, opening a remote socket to them.
+This tool is purposely made for Attack/Defence CTF competitions. It opens as many listening socket as there are services. Each socket receives packets that will be analyzed by custom filters that choose to drop or forward them towards the corresponding service.
 
 ## Usage
 The tool can be used as a Docker container or as a CLI Python application.
