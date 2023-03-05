@@ -48,7 +48,7 @@ python3 proxy.py --target-ips example_ip [example_ip ...] \
 ## Modules
 These are the core filtering entities of the proxy. For each proxied service, a pair of modules is generated inside the ```proxy/proxymodules/services``` folder. Modules execution will follow this flow: 
 
-![proxy](https://user-images.githubusercontent.com/93737876/222970657-3ebb5253-3587-4a84-8f0d-6c6381d91016.jpg)
+![proxy](https://user-images.githubusercontent.com/93737876/222983045-c3a8237a-4b43-40e4-9dcb-302fd3642362.jpg)
 
 Inside the modules you will find an ```execute``` method that receives data from the proxy and returns to the proxy whether the data contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + TARGET_IP + ATTACK NAME``` to easily find attacks in PCAP files if a packet analyzer is used in the system) and then the socket will be closed.
 ### Update module
