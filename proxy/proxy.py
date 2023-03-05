@@ -11,6 +11,7 @@ import select
 import errno
 import copy
 import importlib
+import traceback
 from watchdog.observers import Observer
 from watchdog.events import RegexMatchingEventHandler
 from multiprocessing import Process, Value
@@ -19,6 +20,7 @@ TARGET_IPS = os.getenv("TARGET_IPS", default="").replace(" ", "").split(",")
 TARGET_PORTS = os.getenv("TARGET_PORTS", default="").replace(" ", "").split(",")
 LISTEN_PORTS = os.getenv("LISTEN_PORTS", default="").replace(" ", "").split(",")
 KEYWORD = os.getenv("KEYWORD", default="EH VOLEVIH")
+
 class fileWatchdog(RegexMatchingEventHandler):
     def __init__(self, regexes, in_module, out_module, name):
         self.in_module = in_module
@@ -34,24 +36,27 @@ class fileWatchdog(RegexMatchingEventHandler):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Simple TCP proxy for data ' +
-                                                 'interception and ' +
-                                                 'modification. ')
+                                                 'interception')
 
-    parser.add_argument('-ti', '--targetips', dest='target_ip', nargs='+',
+    parser.add_argument('-ti', '--target-ips', dest='target_ip', nargs='+',
                         default=TARGET_IPS,
-                        help='remote target IPs or host names')
+                        help='remote targets IPs or host names')
 
-    parser.add_argument('-tp', '--targetports', dest='target_port', nargs='+',
+    parser.add_argument('-tp', '--target-ports', dest='target_port', nargs='+',
                         default=TARGET_PORTS,
-                        help='remote targets port')
+                        help='remote targets ports')
 
-    parser.add_argument('-li', '--listenip', dest='listen_ip',
+    parser.add_argument('-li', '--listen-ip', dest='listen_ip',
                         default='0.0.0.0', help='IP address/host name to listen for ' +
                         'incoming data')
 
-    parser.add_argument('-lp', '--listenports', dest='listen_port', nargs='+',
+    parser.add_argument('-lp', '--listen-ports', dest='listen_port', nargs='+',
                         default=LISTEN_PORTS,
                         help='ports to listen on')
+    
+    parser.add_argument('-k', '--keyword', dest='keyword',
+                        default=KEYWORD, help='Keyword to use as a response for malicious packets to quickly find them in a pcap file'
+                        )
 
     parser.add_argument('-pi', '--proxy-ip', dest='proxy_ip', default=None,
                         help='IP address/host name of proxy')
@@ -261,11 +266,14 @@ def start_proxy_thread(local_socket, args, in_module, out_module, count):
                     vprint(b'< < < in\n' + data, args.verbose)
                     lineToSend = ""
                     if in_module is not None:
-                        attack = in_module.execute(data)
-                        if attack is not None:
-                            count.value += 1
-                            data = None
-                            lineToSend = KEYWORD + "\n" + args.target_ip + " " + attack
+                        try:
+                            attack = in_module.execute(data)
+                            if attack is not None:
+                                count.value += 1
+                                data = None
+                                lineToSend = KEYWORD + "\n" + args.target_ip + " " + attack
+                        except:
+                            traceback.print_exc()
                     if data is not None:
                         remote_socket.send(data.encode() if isinstance(data, str) else data)
                     else:
@@ -285,12 +293,14 @@ def start_proxy_thread(local_socket, args, in_module, out_module, count):
                     # going to client
                     vprint(b'> > > out\n' + data, args.verbose)
                     if out_module is not None:
-                        attack = out_module.execute(data)
-                        print(attack)
-                        if attack is not None:
-                            count.value += 1
-                            data = None
-                            lineToSend = KEYWORD + "\n" + args.target_ip + " " + attack
+                        try:
+                            attack = out_module.execute(data)
+                            if attack is not None:
+                                count.value += 1
+                                data = None
+                                lineToSend = KEYWORD + "\n" + args.target_ip + " " + attack
+                        except:
+                            traceback.print_exc()
                     if data is not None:
                         local_socket.send(data)
                     else:
@@ -355,13 +365,13 @@ def serviceFunction(args_process, count):
 
 def main():
     args = parse_args()
-    if not args.target_ip:
+    if not args.target_ip or args.target_ip[0] == "":
         print('Target IPs are required: -ti')
         sys.exit(6)
-    if not args.target_port:
+    if not args.target_port or args.target_port[0] == "":
         print('Target ports are required: -tp')
         sys.exit(7)
-    if not args.listen_port:
+    if not args.listen_port or args.listen_port[0] == "":
         print('Listen ports are required: -lp')
         sys.exit(7)
 
