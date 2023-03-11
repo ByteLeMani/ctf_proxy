@@ -4,7 +4,6 @@ import os
 import sys
 import threading
 import socket
-import socks
 import ssl
 import time
 import select
@@ -59,15 +58,6 @@ def parse_args():
                         default=KEYWORD, 
                         help='Keyword to use as a response for malicious packets to' + 
                         'quickly find them in a pcap file')
-
-    parser.add_argument('-pi', '--proxy-ip', dest='proxy_ip', default=None,
-                        help='IP address/host name of proxy')
-
-    parser.add_argument('-pp', '--proxy-port', dest='proxy_port', type=int,
-                        default=1080, help='proxy port', )
-
-    parser.add_argument('-pt', '--proxy-type', dest='proxy_type', default='SOCKS5', choices=['SOCKS4', 'SOCKS5', 'HTTP'],
-                        type = str.upper, help='proxy type. Options are SOCKS5 (default), SOCKS4, HTTP')
 
     parser.add_argument('-v', '--verbose', dest='verbose', default=VERBOSE,
                         action='store_true',
@@ -204,11 +194,7 @@ def start_proxy_thread(local_socket, args, in_module, out_module, count):
     """This method is executed in a thread. It will relay data between the local
     host and the remote host, while letting modules work on the data before
     passing it on."""
-    remote_socket = socks.socksocket()
-
-    if args.proxy_ip:
-        proxy_types = {'SOCKS5': socks.SOCKS5, 'SOCKS4': socks.SOCKS4, 'HTTP': socks.HTTP}
-        remote_socket.set_proxy(proxy_types[args.proxy_type], args.proxy_ip, args.proxy_port)
+    remote_socket = socket.socket()
 
     try:
         remote_socket.connect((args.target_ip, args.target_port))
@@ -260,7 +246,15 @@ def start_proxy_thread(local_socket, args, in_module, out_module, count):
                     print(f"{time.strftime('%Y%m%d-%H%M%S')}: Socket exception in start_proxy_thread")
                     raise serr
 
-            data = receive_from(sock)
+            try:
+                data = receive_from(sock)
+            except socket.error as serr:
+                vprint(f"{time.strftime('%Y%m%d-%H%M%S')}: Socket exception in start_proxy_thread: connection reset by local or remote host")
+                remote_socket.close()
+                local_socket.close()
+                running = False
+                break
+            
             vprint('Received %d bytes' % len(data), args.verbose)
 
             if sock == local_socket:
