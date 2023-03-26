@@ -8,7 +8,7 @@ import traceback
 def getConfig(path) -> Config:
     with open(path, "r") as f:
         x = json.load(f)
-        x["services"] = [Service(name, **x["services"][name]) for name in x["services"]]
+        x["services"] = [Service(**service) for service in x["services"]]
         return Config(**x)
 
 
