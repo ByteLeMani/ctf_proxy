@@ -44,7 +44,7 @@ In the ```services``` list, the following parameters can be set for each service
 - **target_port**: service port
 - **listen_port**: proxy port to listen on
 - **listen_ip**: *(optional)*: IP where the proxy will listen on, default=```"0.0.0.0"```
-- **ssl**: *(only if SSL enabled)*
+- **ssl**: *(only if SSL enabled)* each file will be looked in the ```proxy/config/certificates``` folder:
   - **server_certificate**: server certificate in PEM format
   - **server_key**: server key file
   - **client_certificate**: *(optional)*: for client authentication, client certificate in PEM format
