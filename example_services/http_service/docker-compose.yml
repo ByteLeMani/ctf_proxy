@@ -1,5 +1,5 @@
 services:
-  http2:
+  http_service:
     image: httpd
     # ports:
       # - 80:80

@@ -6,17 +6,11 @@ services:
     restart: unless-stopped
     environment:
       PYTHONUNBUFFERED: 1
-      TARGET_IPS: "example1, example2, 192.168.1.100"
-      TARGET_PORTS: "9090,9091,9092"
-      LISTEN_PORTS: "8080,8081,8082"
-      KEYWORD: "EXAMPLEKEYWORD"
-      VERBOSE: "false"
     ports:
-      - 8080:8080
-      - 8081:8081
-      - 8082:8082
+      - 80:80
+      - 443:443
     volumes:
-      - "./proxy:/src/proxy"
+      - "./proxy:/proxy"
     container_name: proxy
 
 networks:

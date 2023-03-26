@@ -1,0 +1,23 @@
+{
+    "services": {
+        "http_service": {
+            "target_ip": "http_service",
+            "target_port": 80,
+            "listen_port": 80
+        },
+        "https_service": {
+            "target_ip": "https_service",
+            "target_port": 443,
+            "listen_port": 443,
+            "ssl": {
+                "server_certificate": "example.pem",
+                "server_key": "example.pem"
+            }
+        }
+    },
+    
+    "global_config": {
+        "keyword": "EH! VOLEVI",
+        "verbose": false
+    }
+}
