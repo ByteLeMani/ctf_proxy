@@ -1,8 +1,8 @@
 FROM python:3.10
 
-COPY proxy /src/proxy
+COPY proxy /proxy
 
-WORKDIR /src/proxy
+WORKDIR /proxy
 
 RUN pip install -r requirements.txt
 

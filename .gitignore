@@ -1,6 +1,9 @@
 *.class
 *.pyc
-proxy/proxymodules/services/*
+proxy/filter_modules/*
+!proxy/filter_modules/template.py
+proxy/config/certificates/*
+!proxy/config/certificates/example.pem
 proxy/log.txt
 
 # Byte-compiled / optimized / DLL files

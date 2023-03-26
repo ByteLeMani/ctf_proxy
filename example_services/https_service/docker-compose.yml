@@ -1,8 +1,8 @@
 services:
-  http1:
-    image: httpd
+  https_service:
+    image: inanimate/httpd-ssl
     # ports:
-      # - 80:80
+      # - 443:443
 
 networks:
   default:
