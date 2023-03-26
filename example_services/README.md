@@ -1,19 +1,19 @@
 # Example
-You can test the proxy by copying the contents of the ```example_docker_compose.yml``` file into the proxy ```docker-compose.yml```.
+First of all, build and run the proxy. The provided ```config.json``` file is already suited to the example. 
 
-First of all, build and run the proxy. Only after that, build and run the two http services (otherwise the docker network will not be found). 
+Only after that, build and run the two http services (otherwise the docker network will not be found). 
 
 That's all. You can now enjoy the proxy and see if it works:
 ```
-$ curl localhost
+$ curl http://localhost
 <html><body><h1>It works!</h1></body></html>
 
-$ curl localhost:8080
+$ curl https://localhost
 <html><body><h1>It works!</h1></body></html>
 ```
 
 ## Filtering
-In the file http1_in.py from the services modules directory uncomment these lines:
+In the file ```http_service_in.py```, from the ```filter_modules/http_service``` directory, uncomment these lines:
 ```python
     def SQLi(self, data):
         if "union" in decode(data).lower():
@@ -25,12 +25,19 @@ and add self.SQLi inside the attacks list:
 ```python
         attacks = [self.SQLi]
 ```
-We can test if the filter works adding ```union``` anywhere in the request:
+We can test if the filter works adding ```union``` anywhere in the request.
+Let's run a TCP capture using ```tcpdump```:
+```bash
+sudo tcpdump -s 0 -i lo port 80 or port 443 -w mycap.pcap
+```
+Then let's try to attack our service:
 ```
 $ curl localhost/?union
 curl: (1) Received HTTP/0.9 when not allowed
 ```
-The proxy answer in case of attacks is not HTTP so curl doesn't understand it. We can analyze the TCP stream inside the .pcap file (if any):
+The proxy answer in this case is not HTTP but purely TCP so ```curl``` doesn't understand it.
+If we look inside the .pcap file we've just generated, we can easily find the attack by searching for the keyword ```EH! VOLEVI```:
+
 ```
 GET /?union HTTP/1.1
 Host: localhost
@@ -38,9 +45,8 @@ User-Agent: curl/7.68.0
 Accept: */*
 
 EH! VOLEVI
-http1 SQLi
+http_service SQLi
 ```
 ![zeb](https://media.tenor.com/RuX0-g3wo-IAAAAC/zeb-zeb89.gif)
 
-
-This way you can search for attacks on Wireshark by searching for the keyword.
+It also works on TLS encrypted communications, because the keyword will be sent as plaintext.
