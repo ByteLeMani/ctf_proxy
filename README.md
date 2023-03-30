@@ -82,7 +82,7 @@ networks:
     name: ctf_network
     external: true
 ```
-This way, you can use the services' name directly in the ```target_ip``` parameters. Moreover, as the services are connected to the proxy network they are reachable inside it without exposing or changing any port, but not reachable from the outside.
+This way, you can use the services' hostname directly in the ```target_ip``` parameters. Moreover, as the services are connected to the proxy network they are reachable inside it without exposing or changing any port, but not reachable from the outside.
 ### CLI Example
 Clone the repository, install the required packages and run it:
 ```bash
@@ -97,7 +97,7 @@ These are the core filtering entities of the proxy. For each proxied service, a 
 
 ![proxy](https://user-images.githubusercontent.com/93737876/222983045-c3a8237a-4b43-40e4-9dcb-302fd3642362.jpg)
 
-Inside the modules you will find an ```execute``` method that receives data from the proxy and returns to the proxy whether the data contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + SERVICE NAME + ATTACK NAME``` to easily find attacks in PCAP files if a packet analyzer is used in the system) and then the socket will be closed.
+Inside the modules you will find an ```execute``` method that receives data from the proxy and returns to the proxy whether the data contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + SERVICE NAME + ATTACK NAME```) to easily find attacks in PCAP files if a packet analyzer is used in the system) and then the socket will be closed.
 ### Update module
 To add a new filter, define a new function inside the class Module called as the name of the attack (or a custom one if you prefer) that accepts data (bytes) as parameter and returns a boolean (True if attack found, False if not). Then add it to the attacks list inside the execute method to enable it. You will find a filter example inside the template.
 
