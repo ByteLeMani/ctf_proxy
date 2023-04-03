@@ -3,6 +3,7 @@ from src.classes import Config, Service
 import socket
 import ssl
 import traceback
+from http.client import parse_headers
 
 
 def getConfig(path) -> Config:
@@ -17,17 +18,64 @@ def vprint(msg, is_verbose):
     if is_verbose:
         print(msg)
 
-
-def receive_from(s):
+def receive_from(s: socket.socket, http):
     """Receive data from a socket until no more data is there"""
     b = b""
-    while True:
-        data = s.recv(4096)
-        b += data
-        if not data or len(data) < 4096:
-            break
-    return b
+    if not http:
+        while True:
+            data = s.recv(4096)
+            b += data
+            if not data or len(data) < 4096:
+                break
+    else:
+        with s.makefile(mode = "rb", buffering=True) as fp:
+            b += fp.readline()
+            if len(b) == 0:
+                return b
+            
+            # read headers
+            content_len = 0
+            chunked = False
+            len_headers = 0
+            while True:
+                line = fp.readline(65537)
+                len_headers += 1
+                if len(line) > 65536:
+                    vprint("Header line too long.")
+                    return b""
+                if len_headers > 100:
+                    vprint("Too many headers")
+                    return b""
+                b += line
+                if line in (b'\r\n', b'\n', b''):
+                    break
+                line = line.decode().lower()
+                if "content-length" in line:
+                    content_len = int(line.split(":")[1])
+                elif "transfer-encoding" in line:
+                    chunked = "chunked" in line
 
+            if content_len:
+                content_len = int(content_len)
+                b += fp.read(content_len)
+            elif chunked:
+                while True:
+                    line = fp.readline()
+                    b+= line
+                    line = line.strip()
+                    chunk_length = int(line, 16)
+
+                    if chunk_length != 0:
+                        chunk = fp.read(chunk_length)
+                        b += chunk
+                    # Each chunk is followed by an additional empty newline
+                    # that we have to consume.
+                    b += fp.readline()
+
+                    # Finally, a chunk size of 0 is an end indication
+                    if chunk_length == 0:
+                        break
+    return b
 
 def filter_packet(data, filter_module):
     if filter_module is not None:
