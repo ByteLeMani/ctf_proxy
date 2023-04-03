@@ -7,7 +7,7 @@ import select
 import errno
 from watchdog.observers import Observer
 from src.filter_modules import import_modules
-from src.classes import FileWatchdog, Service
+from src.classes import ModuleWatchdog, Service
 import src.constants as constants
 import os
 import src.utils as utils
@@ -18,7 +18,7 @@ def service_function(service: Service, global_config, count):
     in_module, out_module = import_modules(service.name, False)
 
     # this event handler will reload modules on changes
-    watchdog_handler = FileWatchdog(regexes=[f".*{service.name}.*\.py"], in_module=in_module,
+    watchdog_handler = ModuleWatchdog(regexes=[f".*{service.name}.*\.py"], in_module=in_module,
                                     out_module=out_module, name=service.name)
     observer = Observer()
     observer.schedule(watchdog_handler, path=os.path.join(constants.MODULES_PATH, service.name), recursive=False)
@@ -123,7 +123,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     raise serr
 
             try:
-                data = utils.receive_from(sock)
+                data = utils.receive_from(sock, service.http)
             except socket.error as serr:
                 utils.vprint(
                     f"{time.strftime('%Y%m%d-%H%M%S')}: Socket exception in connection_thread: connection reset by local or remote host")
