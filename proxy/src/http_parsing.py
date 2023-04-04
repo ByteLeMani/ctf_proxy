@@ -7,7 +7,11 @@ class HttpRequestParser(HttpParser):
         super().__init__(decompress = decompress_body)
         self.execute(data, len(data))
         self._parameters = {}
+        self._raw_data = data
         self._parse_parameters()
+
+    def get_raw_data(self):
+        return self._raw_data
 
     def get_raw_body(self):
         return b"".join(self._body)
@@ -34,9 +38,7 @@ class HttpRequestParser(HttpParser):
             if len(body) == 0:
                 return
             content_type = self.get_headers().get("Content-Type")
-            if not content_type:
-                return
-            if "x-www-form-urlencoded" in content_type:
+            if not content_type or "x-www-form-urlencoded" in content_type:
                 self._parse_query_string(body)
             elif "json" in content_type:
                 self._parameters = json.loads(body)
@@ -44,4 +46,5 @@ class HttpRequestParser(HttpParser):
             self._parse_query_string(self._query_string)
         
     def get_parameters(self):
+        """returns parameters parsed from query string or body"""
         return self._parameters

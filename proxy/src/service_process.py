@@ -39,14 +39,12 @@ def service_function(service: Service, global_config, count):
     try:
         while True:
             in_socket, in_addrinfo = proxy_socket.accept()
-            in_module = watchdog_handler.in_module
-            out_module = watchdog_handler.out_module
             utils.vprint('Connection from %s:%d' %
                          in_addrinfo, global_config["verbose"])
             proxy_thread = threading.Thread(target=connection_thread,
                                             args=(
                                                 in_socket, service, global_config,
-                                                in_module, out_module, count
+                                                watchdog_handler, count
                                             ))
             utils.vprint("Starting proxy thread " +
                          proxy_thread.name, global_config["verbose"])
@@ -59,7 +57,7 @@ def service_function(service: Service, global_config, count):
         sys.exit(0)
 
 
-def connection_thread(local_socket: socket.socket, service: Service, global_config, in_module, out_module, count):
+def connection_thread(local_socket: socket.socket, service: Service, global_config, watchdog_handler, count):
     """This method is executed in a thread. It will relay data between the local
     host and the remote host, while letting modules work on the data before
     passing it on."""
@@ -141,11 +139,12 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     utils.vprint("Connection from local client %s:%d closed" %
                                  peer, global_config["verbose"])
                     remote_socket.close()
+                    local_socket.close()
                     connection_open = False
                     break
 
                 utils.vprint(b'> > > in\n' + data, global_config["verbose"])
-                attack = utils.filter_packet(data, in_module)
+                attack = utils.filter_packet(data, watchdog_handler.in_module)
                 if not attack:
                     remote_socket.send(data)
             else:
@@ -153,12 +152,13 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                 if not len(data):
                     utils.vprint("Connection from remote server %s:%d closed" %
                                  peer, global_config["verbose"])
+                    remote_socket.close()
                     local_socket.close()
                     connection_open = False
                     break
 
                 utils.vprint(b'< < < out\n' + data, global_config["verbose"])
-                attack = utils.filter_packet(data, out_module)
+                attack = utils.filter_packet(data, watchdog_handler.out_module)
                 if not attack:
                     local_socket.send(data)
 
