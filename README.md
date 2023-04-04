@@ -13,13 +13,14 @@ You can configure each service to be proxied using the ```config.json``` file in
             "name": "generic_service", 
             "target_ip": "10.10.10.10", 
             "target_port": 80,
-            "listen_port": 80 
+            "listen_port": 80
         },
         {
             "name": "ssl_service",
             "target_ip": "localhost",
             "target_port": 443,
             "listen_port": 500,
+            "http": true,
             "listen_ip": "0.0.0.0",
             "ssl": {
                 "server_certificate": "server.pem",
@@ -43,7 +44,8 @@ In the ```services``` list, the following parameters can be set for each service
 - **target_ip**: service IP/hostname
 - **target_port**: service port
 - **listen_port**: proxy port to listen on
-- **listen_ip**: *(optional)*: IP where the proxy will listen on, default=```"0.0.0.0"```
+- **listen_ip**: *(optional)* IP where the proxy will listen on, default=```"0.0.0.0"```
+- **http**: *(optional)* must be set to True to enable HTTP parsing, default=```False```
 - **ssl**: *(only if SSL enabled)* each file will be looked in the ```proxy/config/certificates``` folder:
   - **server_certificate**: server certificate in PEM format
   - **server_key**: server key file
@@ -97,9 +99,9 @@ These are the core filtering entities of the proxy. For each proxied service, a 
 
 ![proxy](https://user-images.githubusercontent.com/93737876/222983045-c3a8237a-4b43-40e4-9dcb-302fd3642362.jpg)
 
-Inside the modules you will find an ```execute``` method that receives data from the proxy and returns to the proxy whether the data contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + SERVICE NAME + ATTACK NAME```) to easily find attacks in PCAP files if a packet analyzer is used in the system) and then the socket will be closed.
+Inside the modules you will find an ```execute``` method that receives data from the proxy and returns to the proxy whether the data contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + SERVICE NAME + ATTACK NAME``` to easily find attacks in PCAP files if a packet analyzer is used in the system) and then the socket will be closed.
 ### Update module
-To add a new filter, define a new function inside the class Module called as the name of the attack (or a custom one if you prefer) that accepts data (bytes) as parameter and returns a boolean (True if attack found, False if not). Then add it to the attacks list inside the execute method to enable it. You will find a filter example inside the template.
+To add a new filter, define a new function inside the class Module called as the name of the attack (or a custom one if you prefer) that accepts data as parameter and returns a boolean (True if attack found, False if not). Then add it to the attacks list inside the execute method to enable it. You will find a filter example inside the template.
 
 Every module will be ***automatically reloaded on the fly*** by simply modifying it. If an exception is thrown during the import, the module will not be loaded and the previous version will be used instead. If an exception is thrown at runtime, the packet will simply flow through the proxy.
 

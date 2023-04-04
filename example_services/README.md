@@ -13,19 +13,20 @@ $ curl https://localhost
 ```
 
 ## Filtering
-In the file ```http_service_in.py```, from the ```filter_modules/http_service``` directory, uncomment these lines:
+In the file ```http_service_in.py```, from the ```filter_modules/http_service``` directory, add this function:
 ```python
-    def SQLi(self, data):
-        if "union" in decode(data).lower():
-            return True
-        else:
-            return False
+    def SQLi(self, data: HttpRequestParser):
+        return "union" in data.get_query_string()
+```
+uncomment this line:
+```python
+    data = HttpRequestParser(data)    # uncomment if HTTP
 ```
 and add self.SQLi inside the attacks list:
 ```python
         attacks = [self.SQLi]
 ```
-We can test if the filter works adding ```union``` anywhere in the request.
+We can test if the filter works adding ```union``` in the query string.
 Let's run a TCP capture using ```tcpdump```:
 ```bash
 sudo tcpdump -s 0 -i lo port 80 or port 443 -w mycap.pcap

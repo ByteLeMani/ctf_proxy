@@ -18,7 +18,7 @@ def vprint(msg, is_verbose):
     if is_verbose:
         print(msg)
 
-def receive_from(s: socket.socket, http):
+def receive_from(s: socket.socket, http, verbose=False):
     """Receive data from a socket until no more data is there"""
     b = b""
     if not http:
@@ -41,10 +41,10 @@ def receive_from(s: socket.socket, http):
                 line = fp.readline(65537)
                 len_headers += 1
                 if len(line) > 65536:
-                    vprint("Header line too long.")
+                    vprint("Header line too long.", verbose)
                     return b""
                 if len_headers > 100:
-                    vprint("Too many headers")
+                    vprint("Too many headers", verbose)
                     return b""
                 b += line
                 if line in (b'\r\n', b'\n', b''):
