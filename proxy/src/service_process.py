@@ -121,7 +121,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     raise serr
 
             try:
-                data = utils.receive_from(sock, service.http)
+                data = utils.receive_from(sock, service.http, global_config["verbose"])
             except socket.error as serr:
                 utils.vprint(
                     f"{time.strftime('%Y%m%d-%H%M%S')}: Socket exception in connection_thread: connection reset by local or remote host")
