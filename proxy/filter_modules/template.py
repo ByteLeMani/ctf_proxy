@@ -7,6 +7,8 @@ class Module():
 
     # The attack functions should return a boolean and accept data as a parameter.
 
+    # HTTP examples
+
     # def curl(self, data: HttpRequestParser):
     #     return "curl" in data.get_headers().get("user-agent")
     
@@ -21,10 +23,12 @@ class Module():
     #     else:
     #         return False
 
-    # def nonPrintableChars(self, data):
+    # TCP example
+
+    # def nonPrintableChars(self, data: bytes):
     #     return any([chr(c) not in string.printable for c in data])
 
-    def execute(self, data):
+    def execute(self, data: bytes):
         """
         Returns a string that identifies the attack name.
         If None is returned, no attack has been identified inside data.
