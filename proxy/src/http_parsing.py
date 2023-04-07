@@ -1,20 +1,30 @@
 from http_parser.pyparser import HttpParser
 import json
 from urllib.parse import parse_qsl
+from dataclasses import dataclass
 
-class HttpRequestParser(HttpParser):
+@dataclass
+class HttpMessage():
+    fragment: str
+    headers: dict
+    method: str
+    parameters: dict
+    path: str
+    query_string: str
+    raw_body: bytes
+    status_code: int
+    url: str
+    version: str
+
+class HttpMessageParser(HttpParser):
     def __init__(self, data:bytes, decompress_body=True):
         super().__init__(decompress = decompress_body)
         self.execute(data, len(data))
         self._parameters = {}
-        self._raw_data = data
         self._parse_parameters()
 
-    def get_raw_data(self):
-        return self._raw_data
-
     def get_raw_body(self):
-        return b"".join(self._body)
+        return b"\r\n".join(self._body)
     
     def _parse_query_string(self, raw_string):
         parameters = parse_qsl(raw_string)
@@ -48,3 +58,10 @@ class HttpRequestParser(HttpParser):
     def get_parameters(self):
         """returns parameters parsed from query string or body"""
         return self._parameters
+    
+    def to_message(self):
+        return HttpMessage(self._fragment, self._headers, self._method,
+                           self._parameters, self._path, self._query_string,
+                           self.get_raw_body(), self._status_code,
+                           self._url, ".".join(self._version)
+                           )
