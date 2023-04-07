@@ -2,6 +2,7 @@
 *.pyc
 proxy/filter_modules/*
 !proxy/filter_modules/template.py
+!proxy/filter_modules/example_functions.py
 proxy/config/certificates/*
 !proxy/config/certificates/example.pem
 proxy/log.txt

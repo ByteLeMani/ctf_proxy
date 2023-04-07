@@ -8,6 +8,7 @@ import errno
 from watchdog.observers import Observer
 from src.filter_modules import import_modules
 from src.classes import ModuleWatchdog, Service
+from src.stream import TCPStream, HTTPStream
 import src.constants as constants
 import os
 import src.utils as utils
@@ -87,6 +88,9 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
 
     # This loop ends when no more data is received on either the local or the
     # remote socket
+
+    stream = HTTPStream() if service.http else TCPStream()
+
     connection_open = True
     while connection_open:
         ready_sockets, _, _ = select.select(
@@ -121,7 +125,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     raise serr
 
             try:
-                data = utils.receive_from(sock, service.http, global_config["verbose"])
+                stream.set_current_data(utils.receive_from(sock, service.http, global_config["verbose"]))
             except socket.error as serr:
                 utils.vprint(
                     f"{time.strftime('%Y%m%d-%H%M%S')}: Socket exception in connection_thread: connection reset by local or remote host")
@@ -131,11 +135,11 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                 break
 
             utils.vprint('Received %d bytes' %
-                         len(data), global_config["verbose"])
+                         len(stream.current_data), global_config["verbose"])
 
             if sock == local_socket:
                 # going from client to service
-                if not len(data):
+                if not len(stream.current_data):
                     utils.vprint("Connection from local client %s:%d closed" %
                                  peer, global_config["verbose"])
                     remote_socket.close()
@@ -143,13 +147,13 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     connection_open = False
                     break
 
-                utils.vprint(b'> > > in\n' + data, global_config["verbose"])
-                attack = utils.filter_packet(data, watchdog_handler.in_module)
+                utils.vprint(b'> > > in\n' + stream.current_data, global_config["verbose"])
+                attack = utils.filter_packet(stream, watchdog_handler.in_module)
                 if not attack:
-                    remote_socket.send(data)
+                    remote_socket.send(stream.current_data)
             else:
                 # going from service to client
-                if not len(data):
+                if not len(stream.current_data):
                     utils.vprint("Connection from remote server %s:%d closed" %
                                  peer, global_config["verbose"])
                     remote_socket.close()
@@ -157,10 +161,10 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     connection_open = False
                     break
 
-                utils.vprint(b'< < < out\n' + data, global_config["verbose"])
-                attack = utils.filter_packet(data, watchdog_handler.out_module)
+                utils.vprint(b'< < < out\n' + stream.current_data, global_config["verbose"])
+                attack = utils.filter_packet(stream, watchdog_handler.out_module)
                 if not attack:
-                    local_socket.send(data)
+                    local_socket.send(stream.current_data)
 
             if attack:
                 utils.vprint("Connection %s:%d BLOCKED" %
