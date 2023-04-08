@@ -1,4 +1,5 @@
 import pymongo
+from src.constants import DB_URL
 
 class DbManager(object):
     def __new__(cls):
@@ -7,7 +8,7 @@ class DbManager(object):
         return cls.instance
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://db:27017/")
+        self.client = pymongo.MongoClient(DB_URL)
         self.db = self.client.db
 
     def close(self):

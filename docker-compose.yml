@@ -13,14 +13,6 @@ services:
       - "./proxy:/proxy"
     container_name: proxy
 
-  db:
-    image: mongo:latest
-    ports:
-      - 27017:27017
-    volumes:
-      - ./db:/data/db
-    container_name: ctf_db
-
 networks:
   default:
     name: ctf_network
