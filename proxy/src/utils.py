@@ -4,6 +4,7 @@ import socket
 import ssl
 import traceback
 from http.client import parse_headers
+import time
 
 
 def getConfig(path) -> Config:
@@ -88,10 +89,27 @@ def filter_packet(data, filter_module):
     return None
 
 
-def block_packet(local_socket, remote_socket, block_answer):
+def block_packet(local_socket: socket.socket, remote_socket, block_answer: str, dos: dict = None):
     remote_socket.close()
     if isinstance(local_socket, ssl.SSLSocket):
         local_socket = socket.fromfd(
             local_socket.detach(), socket.AF_INET, socket.SOCK_STREAM)
-    local_socket.send(block_answer.encode())
+
+    if not dos.get("enabled"):
+        local_socket.send(block_answer.encode())
+    else:
+        start = time.time()
+        try:
+            for letter in block_answer:
+                local_socket.sendall(letter.encode())
+                time.sleep(dos["interval"])
+            while time.time() - start < dos["total_length"]:
+                local_socket.sendall(b".")
+                time.sleep(dos["interval"])
+        except Exception as e:
+            # socket has been closed by client
+            pass
     local_socket.close()
+
+
+

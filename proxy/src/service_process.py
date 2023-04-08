@@ -58,7 +58,7 @@ def service_function(service: Service, global_config, count):
         sys.exit(0)
 
 
-def connection_thread(local_socket: socket.socket, service: Service, global_config, watchdog_handler, count):
+def connection_thread(local_socket: socket.socket, service: Service, global_config: dict, watchdog_handler, count):
     """This method is executed in a thread. It will relay data between the local
     host and the remote host, while letting modules work on the data before
     passing it on."""
@@ -172,6 +172,6 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                 count.value += 1
                 block_answer = global_config["keyword"] + \
                     "\n" + service.name + " " + attack
-                utils.block_packet(local_socket, remote_socket, block_answer)
+                utils.block_packet(local_socket, remote_socket, block_answer, global_config.get("dos", None))
                 connection_open = False
                 break
