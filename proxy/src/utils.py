@@ -95,14 +95,10 @@ def block_packet(local_socket: socket.socket, remote_socket, block_answer: str, 
         local_socket = socket.fromfd(
             local_socket.detach(), socket.AF_INET, socket.SOCK_STREAM)
 
-    if not dos.get("enabled"):
-        local_socket.send(block_answer.encode())
-    else:
+    local_socket.send(block_answer.encode())
+    if dos.get("enabled"):
         start = time.time()
         try:
-            for letter in block_answer:
-                local_socket.sendall(letter.encode())
-                time.sleep(dos["interval"])
             while time.time() - start < dos["total_length"]:
                 local_socket.sendall(b".")
                 time.sleep(dos["interval"])
