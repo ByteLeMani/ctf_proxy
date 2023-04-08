@@ -1,4 +1,5 @@
 from src.stream import Stream, TCPStream, HTTPStream
+from src.db_manager import DbManager
 import string
 
 ################################################################################
@@ -35,6 +36,21 @@ def replace_word(self, stream: HTTPStream):
     # the actual data sent by the socket is stream.current_data, so you can't just modify stream.current_http
     stream.current_data = stream.current_data.replace(b"leet", b"l33t")
     return False    # do not block message, just change its contents
+
+def giftCard(self, stream:HTTPStream):
+    message = stream.current_http
+
+    db = DbManager().db.service_name
+    
+    if "GET" in message.method and "card" in message.parameters:
+        cardNumber = message.parameters.get("card")
+        item = {"cardNumber" : cardNumber }
+        if db.find_one(item):
+            return True
+        else:
+            db.insert_one(item)
+            return False
+    return False
 
 ################################################################################
 # TCP

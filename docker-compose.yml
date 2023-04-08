@@ -9,7 +9,6 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
     volumes:
       - "./proxy:/proxy"
     container_name: proxy
@@ -19,8 +18,8 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ~/mongo/data:/data/db
-    container_name: db
+      - ./db:/data/db
+    container_name: ctf_db
 
 networks:
   default:

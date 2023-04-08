@@ -6,6 +6,7 @@ proxy/filter_modules/*
 proxy/config/certificates/*
 !proxy/config/certificates/example.pem
 proxy/log.txt
+db/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
