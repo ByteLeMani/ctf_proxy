@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - ./data:/data/db
+    container_name: ctf_db
+
+networks:
+  default:
+    name: ctf_network
