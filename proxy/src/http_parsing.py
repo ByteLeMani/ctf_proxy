@@ -59,9 +59,14 @@ class HttpMessageParser(HttpParser):
         """returns parameters parsed from query string or body"""
         return self._parameters
     
+    def get_version(self):
+        if self._version:
+            return ".".join([str(x) for x in self._version])
+        return None
+
     def to_message(self):
         return HttpMessage(self._fragment, self._headers, self._method,
                            self._parameters, self._path, self._query_string,
                            self.get_raw_body(), self._status_code,
-                           self._url, ".".join(self._version)
+                           self._url, self.get_version()
                            )
