@@ -1,10 +1,10 @@
 import pymongo
 from src.constants import DB_URL
 
-class DbManager(object):
+class DBManager(object):
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(DbManager, cls).__new__(cls)
+            cls.instance = super(DBManager, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):

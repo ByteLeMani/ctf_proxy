@@ -99,7 +99,7 @@ def block_packet(local_socket: socket.socket, remote_socket, block_answer: str, 
     if dos.get("enabled"):
         start = time.time()
         try:
-            while time.time() - start < dos["total_length"]:
+            while time.time() - start < dos["duration"]:
                 local_socket.sendall(b".")
                 time.sleep(dos["interval"])
         except Exception as e:
