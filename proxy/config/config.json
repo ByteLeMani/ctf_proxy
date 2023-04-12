@@ -25,7 +25,7 @@
         "verbose": false,
         "dos": {
             "enabled": true,
-            "total_length": 60,
+            "duration": 60,
             "interval": 2
         }
     }

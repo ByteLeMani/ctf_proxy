@@ -1,5 +1,5 @@
 from src.stream import Stream, TCPStream, HTTPStream
-from src.db_manager import DbManager
+from src.db_manager import DBManager
 import string
 
 ################################################################################
@@ -40,7 +40,7 @@ def replace_word(self, stream: HTTPStream):
 def giftCard(self, stream:HTTPStream):
     message = stream.current_http
 
-    db = DbManager().db.service_name
+    db = DBManager().db.service_name
     
     if "GET" in message.method and "card" in message.parameters:
         cardNumber = message.parameters.get("card")
