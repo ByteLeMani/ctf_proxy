@@ -170,8 +170,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                 utils.vprint("Connection %s:%d BLOCKED" %
                              peer, global_config["verbose"])
                 count.value += 1
-                block_answer = global_config["keyword"] + \
-                    "\n" + service.name + " " + attack
+                block_answer = global_config["keyword"] + " " + service.name + " " + attack
                 utils.block_packet(local_socket, remote_socket, block_answer, global_config.get("dos", None))
                 connection_open = False
                 break

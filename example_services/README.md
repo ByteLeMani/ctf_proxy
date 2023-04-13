@@ -41,8 +41,7 @@ Host: localhost
 User-Agent: curl/7.68.0
 Accept: */*
 
-EH! VOLEVI
-http_service SQLi
+EH! VOLEVI http_service SQLi
 ```
 ![zeb](https://media.tenor.com/RuX0-g3wo-IAAAAC/zeb-zeb89.gif)
 

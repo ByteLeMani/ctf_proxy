@@ -108,13 +108,13 @@ These are the core filtering entities of the proxy. For each proxied service, a 
 
 ![proxy](https://user-images.githubusercontent.com/93737876/222983045-c3a8237a-4b43-40e4-9dcb-302fd3642362.jpg)
 
-Inside the modules you will find an ```execute``` method that receives a Stream object from the proxy and returns to the proxy whether the stream contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + "\n" + SERVICE NAME + ATTACK NAME```) to easily find attacks in PCAP files if a packet analyzer is used in the system. At this point, the socket will be kept alive to interfere with attackers' scripts if the ```dos``` parameter is enabled, otherwise the socket will be closed.
+Inside the modules you will find an ```execute``` method that receives a Stream object from the proxy and returns to the proxy whether the stream contains an attack or not. If an attack is found, the proxy will send to the attacker a custom string (```KEYWORD + " " + SERVICE NAME + " " + ATTACK NAME```) to easily find attacks in PCAP files if a packet analyzer is used in the system. At this point, the socket will be kept alive to interfere with attackers' scripts if the ```dos``` parameter is enabled, otherwise the socket will be closed.
 
-Stream is the base class for TCPStream and HTTPStream and contains the current and previous received messages on the socket.
+**Stream** is the base class for **TCPStream** and **HTTPStream** and contains the current and previous received messages on the socket.
 #### TCPStream
 TCPStream is used in case of TCP only connections. The ```previous_data``` variable contains the entire conversation that happened through the socket before the latest received message. The ```current_data``` variable contains just the latest message and can be modified to alter the content of the message that will be sent from the proxy.
 #### HTTPStream
-HTTPStream is used in case of HTTP connections. ```previous_data``` is now different because it only contains the latest raw HTTP message before the current one. ```current_data``` contains the current raw HTTP message. Two more variables are available, ```previous_http``` and ```current_http```: they both store the parsed version of the correspective raw variables as a ```HttpMessage``` object. The actual values sent through the socket are the ones stored in ```current_data```, which means you should edit this variable to alter the content of the message sent from the proxy.
+HTTPStream is used in case of HTTP connections. ```previous_data``` is now different because it only contains the latest raw HTTP message before the current one, while ```current_data``` contains the current raw HTTP message. Two more variables are available, ```previous_http``` and ```current_http```: they both store the parsed version of the correspective raw variables as a ```HttpMessage``` objects. The actual values sent through the socket are the ones stored in ```current_data```, which means you should edit this variable to alter the content of the message sent from the proxy.
 
 ### Update module
 To add a new filter, define a new function inside the class Module called as the name of the attack (or a custom one if you prefer) that accepts data as parameter and returns a boolean (True if attack found, False if not). Then add it to the attacks list inside the execute method to enable it. You will find a filter example inside the template.
@@ -131,7 +131,7 @@ You can monitor the file by using:
 ```
 watch cat log.txt
 ```
-Any relevant information will be printed to stdout. Set ```VERBOSE``` to ```true``` for more info.
+Any relevant information will be printed to stdout. Set ```verbose``` to ```true``` for more info.
 
 If you're using the Docker version, you can inspect the docker logs to access them: 
 ```
