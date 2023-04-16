@@ -1,45 +1,59 @@
-from src.http_parsing import HttpMessageParser
+from src.http_parsing import HttpMessageParser, HttpMessage
+from collections import deque
 
+# class NoIndexError(deque):
+#     def __getitem__(self, key):
+#         try:
+#             return super().__getitem__(key)
+#         except:
+#             return b""
+        
 class Stream():
-    def __init__(self):
-        self.current_data = b""
-        self.previous_data = b""
-    
-    def set_current_data(self, data: bytes):
-        pass
+    def __init__(self, max_stored_messages: int = 50, max_message_size: int = 65535):
+        self.current_message = b""
+        self.previous_messages = deque(maxlen=max_stored_messages)
+        self._max_message_size = max_message_size
 
+    def set_current_message(self, data: bytes):
+        pass
 
 class TCPStream(Stream):
     """
     Class for storing TCP data of a single connection.
 
-    current_data: current bytes received (this will be sent to the socket, it can be modified)
+    current_message: current message as bytes received (this will be sent to the socket, it can be modified)
 
-    previous_data: entire TCP stream bytes of the connection except current_data
+    previous_messages: latest max_stored_messages messages of the connection before current_message
     """
-    
-    def set_current_data(self, data: bytes):
-        self.previous_data = self.current_data
-        self.current_data = data
-
+    def set_current_message(self, data: bytes):
+        if len(self.current_message) <= self._max_message_size:
+            self.previous_messages.append(self.current_message)
+        else:
+            self.previous_messages.append(self.current_message[-self._max_message_size])
+        self.current_message = data
 class HTTPStream(Stream):
     """
     Class for storing HTTP data of a single connection.
 
-    current_data: current HTTP request as bytes (this will be sent to the socket, it can be modified)
+    current_message: current message as bytes received (this will be sent to the socket, it can be modified)
 
-    previous_data: previous HTTP request as bytes
+    previous_messages: latest max_stored_messages messages of the connection before current_message
 
-    current_http: parsed current_data as HttpMessage
+    current_http_message: current_message parsed as HttpMessage
 
-    previous_http: parsed previous_data as HttpMessage
+    previous_http_messages: previous_messages parsed as HttpMessage
     """
-    def __init__(self):
-        super().__init__()
-        self.current_http = None
-        self.previous_http = None
-    def set_current_data(self, data: bytes):
-        self.previous_data = self.current_data
-        self.current_data = data
-        self.previous_http = self.current_http
-        self.current_http = HttpMessageParser(self.current_data).to_message()
+    def __init__(self, max_stored_messages: int = 50, max_message_size: int = 65535):
+        super().__init__(max_stored_messages, max_message_size)
+        self.current_http_message = None
+        self.previous_http_messages: deque[HttpMessage] = deque(maxlen=max_stored_messages)
+
+    def set_current_message(self, data: bytes):
+        if len(self.current_message) <= self._max_message_size:
+            self.previous_messages.append(self.current_message)            
+        else:
+            self.previous_messages.append(self.current_message[:self._max_message_size])
+        self.previous_http_messages.append(HttpMessageParser(self.previous_messages[-1]).to_message())
+        
+        self.current_message = data
+        self.current_http_message = HttpMessageParser(data).to_message()

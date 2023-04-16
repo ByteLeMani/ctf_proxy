@@ -16,7 +16,7 @@ $ curl https://localhost
 In the file ```http_service_in.py```, from the ```filter_modules/http_service``` directory, add this function:
 ```python
     def SQLi(self, stream: HTTPStream):
-        return "union" in stream.current_http.query_string
+        return "union" in stream.current_http_message.query_string
 ```
 and add self.SQLi inside the attacks list:
 ```python
