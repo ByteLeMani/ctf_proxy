@@ -23,13 +23,13 @@ class TCPStream(Stream):
 
     current_message: current message as bytes received (this will be sent to the socket, it can be modified)
 
-    previous_messages: latest max_stored_messages messages of the connection before current_message
+    previous_messages: latest max_stored_messages messages of the connection before current_message (newest to oldest)
     """
     def set_current_message(self, data: bytes):
         if len(self.current_message) <= self._max_message_size:
-            self.previous_messages.append(self.current_message)
+            self.previous_messages.appendleft(self.current_message)
         else:
-            self.previous_messages.append(self.current_message[-self._max_message_size])
+            self.previous_messages.appendleft(self.current_message[-self._max_message_size])
         self.current_message = data
 class HTTPStream(Stream):
     """
@@ -37,11 +37,11 @@ class HTTPStream(Stream):
 
     current_message: current message as bytes received (this will be sent to the socket, it can be modified)
 
-    previous_messages: latest max_stored_messages messages of the connection before current_message
+    previous_messages: latest max_stored_messages messages of the connection before current_message (newest to oldest)
 
     current_http_message: current_message parsed as HttpMessage
 
-    previous_http_messages: previous_messages parsed as HttpMessage
+    previous_http_messages: previous_messages parsed as HttpMessage (newest to oldest)
     """
     def __init__(self, max_stored_messages: int = 50, max_message_size: int = 65535):
         super().__init__(max_stored_messages, max_message_size)
@@ -50,10 +50,10 @@ class HTTPStream(Stream):
 
     def set_current_message(self, data: bytes):
         if len(self.current_message) <= self._max_message_size:
-            self.previous_messages.append(self.current_message)            
+            self.previous_messages.appendleft(self.current_message)            
         else:
-            self.previous_messages.append(self.current_message[:self._max_message_size])
-        self.previous_http_messages.append(HttpMessageParser(self.previous_messages[-1]).to_message())
+            self.previous_messages.appendleft(self.current_message[:self._max_message_size])
+        self.previous_http_messages.appendleft(HttpMessageParser(self.previous_messages[0]).to_message())
         
         self.current_message = data
         self.current_http_message = HttpMessageParser(data).to_message()
