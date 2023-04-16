@@ -61,7 +61,7 @@ def nonPrintableChars(self, stream: TCPStream):
 
 def password(self, stream:TCPStream):
     """block passwords longer than 10 characters"""
-    if b"Insert password:" in stream.previous_messages.splitlines()[-1] and len(stream.current_message.strip()) > 10:
+    if b"Insert password:" in stream.previous_messages[0] and len(stream.current_message.strip()) > 10:
         return True
     return False
 

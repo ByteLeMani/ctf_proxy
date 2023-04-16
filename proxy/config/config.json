@@ -27,6 +27,8 @@
             "enabled": true,
             "duration": 60,
             "interval": 2
-        }
+        },
+        "max_stored_messages": 10,
+        "max_message_size": 65535
     }
 }
