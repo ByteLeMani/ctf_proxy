@@ -8,7 +8,7 @@ class Module():
     #     """
     #     block usernames longer than 10 characters for register endpoint
     #     """
-    #     message = stream.current_http
+    #     message = stream.current_http_message
     #     if "register" in message.url and "POST" in message.method:
     #         username = message.parameters.get("username")
     #         if len(username) > 10:
@@ -20,7 +20,7 @@ class Module():
 
     # def password(self, stream: TCPStream):
     #     """block passwords longer than 10 characters"""
-    #     if b"Insert password:" in stream.previous_data.splitlines()[-1] and len(stream.current_data.strip()) > 10:
+    #     if b"Insert password:" in stream.previous_messages.splitlines()[-1] and len(stream.current_message.strip()) > 10:
     #         return True
     #     return False
 
