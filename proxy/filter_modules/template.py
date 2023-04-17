@@ -1,9 +1,12 @@
 from src.stream import Stream, TCPStream, HTTPStream
-# from src.db_manager import DbManager
+# from src.db_manager import DBManager
 
 class Module():
-    # HTTP Example
+    
+    # INFO: uncomment these functions to enable them
 
+    # HTTP Example
+    
     # def username(self, stream: HTTPStream):
     #     """
     #     block usernames longer than 10 characters for register endpoint
@@ -32,7 +35,11 @@ class Module():
         If None is returned, no attack has been identified inside data.
         If a string is returned, an attack has been identified and the socket will be closed.
         """
-        attacks = []            # [self.username, self.password]
+        
+        ignored_functions = [] # ["password"]
+        
+        attacks = [getattr(Module, attribute) for attribute in dir(Module) if callable(getattr(Module, attribute)) and attribute.startswith('__') is False and attribute != "execute" and attribute not in ignored_functions]
+
         for attack in attacks:
             try:
                 if attack(stream):
