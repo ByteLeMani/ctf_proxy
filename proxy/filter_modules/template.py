@@ -42,7 +42,7 @@ class Module():
 
         for attack in attacks:
             try:
-                if attack(stream):
+                if attack(self, stream):
                     return attack.__name__
             except IndexError:
                 pass
