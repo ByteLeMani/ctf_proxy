@@ -1,5 +1,5 @@
 # Example
-First of all, build and run the proxy. The provided ```config.json``` file is already suited to the example. 
+First of all, build and run the proxy. The provided `config.json` file is already suited to the example. 
 
 Only after that, build and run the two http services (otherwise the docker network will not be found). 
 
@@ -13,17 +13,13 @@ $ curl https://localhost
 ```
 
 ## Filtering
-In the file ```http_service_in.py```, from the ```filter_modules/http_service``` directory, add this function:
+In the file `http_service_in.py`, from the `filter_modules/http_service` directory, add this function:
 ```python
     def SQLi(self, stream: HTTPStream):
         return "union" in stream.current_http_message.query_string
 ```
-and add self.SQLi inside the attacks list:
-```python
-        attacks = [self.SQLi]
-```
-We can test if the filter works adding ```union``` in the query string.
-Let's run a TCP capture using ```tcpdump```:
+We can test if the filter works adding `union` in the query string.
+Let's run a TCP capture using `tcpdump`:
 ```bash
 sudo tcpdump -s 0 -i lo port 80 or port 443 -w mycap.pcap
 ```
@@ -32,8 +28,8 @@ Then let's try to attack our service:
 $ curl localhost/?union
 curl: (1) Received HTTP/0.9 when not allowed
 ```
-The proxy answer in this case is not HTTP but purely TCP so ```curl``` doesn't understand it.
-If we look inside the .pcap file we've just generated, we can easily find the attack by searching for the keyword ```EH! VOLEVI```:
+The proxy answer in this case is not HTTP but purely TCP so `curl` doesn't understand it.
+If we look inside the .pcap file we've just generated, we can easily find the attack by searching for the keyword `EH! VOLEVI`:
 
 ```
 GET /?union HTTP/1.1
