@@ -87,7 +87,7 @@ ports:
 
 Then run the container:
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
 #### FOR A/D CONTAINERIZED SERVICES
 You may want to add this configuration to the services docker-compose.yml file and ***remove any address/port binding*** it may have, to take advantage of the docker network DNS.
