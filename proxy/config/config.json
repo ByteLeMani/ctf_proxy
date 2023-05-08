@@ -24,7 +24,7 @@
         "keyword": "EH! VOLEVI",
         "verbose": false,
         "dos": {
-            "enabled": true,
+            "enabled": false,
             "duration": 60,
             "interval": 2
         },
