@@ -56,4 +56,8 @@ class HTTPStream(Stream):
         self.previous_http_messages.appendleft(HttpMessageParser(self.previous_messages[0]).to_message())
         
         self.current_message = data
-        self.current_http_message = HttpMessageParser(data).to_message()
+        try:
+            self.current_http_message = HttpMessageParser(data).to_message()
+        except Exception as e:
+            self.current_http_message = None
+            print("Error in HTTP parsing:", str(e))
