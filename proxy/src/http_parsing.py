@@ -21,7 +21,11 @@ class HttpMessageParser(HttpParser):
         super().__init__(decompress = decompress_body)
         self.execute(data, len(data))
         self._parameters = {}
-        self._parse_parameters()
+        try:
+            self._parse_parameters()
+        except Exception as e:
+            print("Error in parameters parsing:", data)
+            print("Exception:", str(e))
 
     def get_raw_body(self):
         return b"\r\n".join(self._body)
@@ -49,7 +53,10 @@ class HttpMessageParser(HttpParser):
                 return
             content_type = self.get_headers().get("Content-Type")
             if not content_type or "x-www-form-urlencoded" in content_type:
-                self._parse_query_string(body)
+                try:
+                    self._parse_query_string(body.decode())
+                except:
+                    pass
             elif "json" in content_type:
                 self._parameters = json.loads(body)
         elif self._method == "GET":

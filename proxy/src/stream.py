@@ -53,10 +53,11 @@ class HTTPStream(Stream):
             self.previous_messages.appendleft(self.current_message)            
         else:
             self.previous_messages.appendleft(self.current_message[:self._max_message_size])
-        self.previous_http_messages.appendleft(HttpMessageParser(self.previous_messages[0]).to_message())
         
         self.current_message = data
-        try:
+        
+        try:            
+            self.previous_http_messages.appendleft(HttpMessageParser(self.previous_messages[0]).to_message())
             self.current_http_message = HttpMessageParser(data).to_message()
         except Exception as e:
             self.current_http_message = None
