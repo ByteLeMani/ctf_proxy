@@ -214,6 +214,7 @@ def restart_services():
 if __name__ == "__main__":
     if Path(os.getcwd()).name == "ctf_proxy":
         os.chdir("..")
+    print("\n")
     services_dict = parse_services()
     edit_services()
     configure_proxy()
