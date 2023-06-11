@@ -7,7 +7,7 @@ import ruamel.yaml  # pip install ruamel.yaml
 
 """
 Why not just use the included yaml package?
-Because this one preservs order and comments (and also allows adding them)
+Because this one preserves order and comments (and also allows adding them)
 """
 
 from pathlib import Path
