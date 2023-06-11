@@ -7,7 +7,7 @@ import ruamel.yaml  # pip install ruamel.yaml
 
 """
 Why not just use the included yaml package?
-Because this one preserves order and comments (and also allows adding them)
+Because this one preservs order and comments (and also allows adding them)
 """
 
 from pathlib import Path
@@ -83,7 +83,7 @@ def parse_services():
             json.dump(services_dict, backupfile, indent=2)
     print("Found services:")
     for service in services_dict:
-        print(f"\n\t{service}")
+        print(f"\t{service}")
     return services_dict
 
 
@@ -212,7 +212,8 @@ def restart_services():
 
 
 if __name__ == "__main__":
-    os.chdir("..")
+    if Path(os.getcwd()).name == "ctf_proxy":
+        os.chdir("..")
     services_dict = parse_services()
     edit_services()
     configure_proxy()
