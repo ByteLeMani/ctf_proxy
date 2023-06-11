@@ -98,6 +98,13 @@ networks:
     external: true
 ```
 This way, you can use the services' hostname directly in the `target_ip` parameters. Moreover, as the services are connected to the proxy network they are reachable inside it without exposing or changing any port, but not reachable from the outside.
+
+### Automatic script
+All the above configuration can be done with the provided setup script. Either clone the repository and run it or run
+```
+curl -sL https://raw.githubusercontent.com/ByteLeMani/ctf_proxy/main/setup_proxy.py | python3
+```
+The script will work as long as it is called from inside ctf_proxy or besides all the services
 ### CLI Example
 Clone the repository, install the required packages and run it:
 ```bash
