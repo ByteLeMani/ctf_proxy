@@ -131,11 +131,6 @@ def edit_services():
             # add external network
             ymlfile["networks"] = {"default": {"name": "ctf_network", "external": True}}
 
-            # add external volume
-            ymlfile["volumes"] = {
-                "volume_persistente": {"name": "volume_persistente", "external": True}
-            }
-
             # write file
             with open(file, "w") as fs:
                 yaml.dump(ymlfile, fs)
