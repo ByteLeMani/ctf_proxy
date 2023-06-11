@@ -102,7 +102,7 @@ This way, you can use the services' hostname directly in the `target_ip` paramet
 ### Automatic script
 All the above configuration can be done with the provided setup script. Either clone the repository, install ruamel.yaml and run the script or run
 ```
-pip install ruamel.yaml; curl -sL https://raw.githubusercontent.com/ByteLeMani/ctf_proxy/main/setup_proxy.py; ./setup_proxy.py
+pip install ruamel.yaml; curl -s https://raw.githubusercontent.com/ByteLeMani/ctf_proxy/main/setup_proxy.py > setup_proxy.py; python3 setup_proxy.py
 ```
 The script will work as long as it is called from inside ctf_proxy or besides all the services. In the latter case it will clone ctf_proxy before configuring it.
 ### CLI Example
