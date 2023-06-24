@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 
 import os
+import sys
 import json
+import shutil
+
+from pathlib import Path
 
 import ruamel.yaml  # pip install ruamel.yaml
 
@@ -10,14 +14,28 @@ Why not just use the included yaml package?
 Because this one preservs order and comments (and also allows adding them)
 """
 
-from pathlib import Path
-
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
 yaml.indent(sequence=3, offset=1)
 
+dirs = []
 services_dict = {}
+
+
+def make_backup():
+    for file in Path(".").iterdir():
+        if (
+            file.is_dir()
+            and file.stem[0] != "."
+            and file.stem not in ["remote_pcap_folder", "caronte", "tulip", "ctf_proxy"]
+        ):
+            dirs.append(Path(".", file))
+
+    for dir in dirs:
+        if not Path(dir.name + f"_backup.zip").exists():
+            shutil.make_archive(dir.name + f"_backup", "zip", dir)
+    return dirs
 
 
 def parse_services():
@@ -26,23 +44,12 @@ def parse_services():
     Otherwise, parse all the docker-compose yamls to build the dictionary and
     then save the result into services.json
     """
-    dirs = []
-
+    global services_dict
     if Path("./services.json").exists():
         print("Found existing services file")
         with open("./services.json", "r") as fs:
             services_dict = json.load(fs)
     else:
-        services_dict = {}
-        for file in Path(".").iterdir():
-            if (
-                file.is_dir()
-                and file.stem[0] != "."
-                and file.stem
-                not in ["remote_pcap_folder", "caronte", "tulip", "ctf_proxy"]
-            ):
-                dirs.append(Path(".", file))
-
         for service in dirs:
             file = Path(service, "docker-compose.yml")
             if not file.exists():
@@ -84,6 +91,7 @@ def parse_services():
     print("Found services:")
     for service in services_dict:
         print(f"\t{service}")
+
     return services_dict
 
 
@@ -91,8 +99,6 @@ def edit_services():
     """
     Prepare the docker-compose for each service; comment out the ports, add hostname, add the external network, add an external volume for data persistence (this alone isn't enough - it' s just for convenience since we are already here)
     """
-    global services_dict
-
     for service in services_dict:
         file = Path(service, "docker-compose.yml")
         if not file.exists():
@@ -120,7 +126,12 @@ def edit_services():
 
                 # Add hostname
                 hostname = f"{service}_{container}"
-                ymlfile["services"][container]["hostname"] = hostname
+                if "hostname" in ymlfile["services"][container]:
+                    print(
+                        f"[!] Error: service {service}_{container} already has a hostname. Skipping this step, review it manually before restarting."
+                    )
+                else:
+                    ymlfile["services"][container]["hostname"] = hostname
 
             except Exception as e:
                 print(ymlfile)
@@ -129,7 +140,16 @@ def edit_services():
             # TODO: Add restart: always
 
             # add external network
-            ymlfile["networks"] = {"default": {"name": "ctf_network", "external": True}}
+            net = {"default": {"name": "ctf_network", "external": True}}
+            if "networks" in ymlfile:
+                if "default" not in ymlfile["networks"]:
+                    ymlfile["networks"].append(net)
+                else:
+                    print(
+                        f"[!] Error: service {service} already has a default network. Skipping this step, review it manually before restarting."
+                    )
+            else:
+                ymlfile["networks"] = net
 
             # write file
             with open(file, "w") as fs:
@@ -141,8 +161,6 @@ def configure_proxy():
     Properly configure both the proxy's docker-compose with the listening ports and the config.json with all the services.
     We can't automatically configure ssl for now, so it's better to set https services as not http so they keep working at least. Manually configure the SSL later and turn http back on.
     """
-    global services_dict
-
     # Download ctf_proxy
     if not Path("./ctf_proxy").exists():
         os.system("git clone https://github.com/ByteLeMani/ctf_proxy.git")
@@ -188,7 +206,6 @@ def configure_proxy():
 
 
 def restart_services():
-    global services_dict
     # With the config done, make sure every service is off and then start them one by one
 
     for service in services_dict:
@@ -209,10 +226,12 @@ def restart_services():
 if __name__ == "__main__":
     if Path(os.getcwd()).name == "ctf_proxy":
         os.chdir("..")
-    print("\n")
+    dirs = make_backup()
     services_dict = parse_services()
-    edit_services()
-    configure_proxy()
+    if "RESTART" not in sys.argv:
+        print("\n")
+        edit_services()
+        configure_proxy()
     confirmation = input(
         "You are about to restart all your services! Make sure that no catastrophic configuration error has occurred.\nPress Enter to continue"
     )
