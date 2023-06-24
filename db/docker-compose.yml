@@ -13,3 +13,4 @@ services:
 networks:
   default:
     name: ctf_network
+    external: true
