@@ -263,15 +263,22 @@ def main():
         print("Found existing services file")
         with open("./services.json", "r") as fs:
             services_dict = json.load(fs)
-    else:
-        parse_dirs()
-        parse_services()
+
+    if "RESTART" in sys.argv:
+        if not services_dict:
+            print(
+                f"Can't restart without first parsing the services. Please run the script at least once without the RESTART flag"
+            )
+        else:
+            restart_services()
+        return
+
+    parse_dirs()
+    parse_services()
     make_backup()
 
-    if "RESTART" not in sys.argv:
-        print("\n")
-        edit_services()
-        configure_proxy()
+    edit_services()
+    configure_proxy()
     confirmation = input(
         "You are about to restart all your services! Make sure that no catastrophic configuration error has occurred.\nPress Enter to continue"
     )
