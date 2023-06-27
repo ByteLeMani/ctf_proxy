@@ -5,7 +5,7 @@ import sys
 import json
 import shutil
 
-from pathlib import Path
+from pathlib import Path, PosixPath
 
 import ruamel.yaml  # pip install ruamel.yaml
 
@@ -14,28 +14,49 @@ Why not just use the included yaml package?
 Because this one preservs order and comments (and also allows adding them)
 """
 
+blacklist = ["remote_pcap_folder", "caronte", "tulip", "ctf_proxy"]
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
 yaml.indent(sequence=3, offset=1)
 
-dirs = []
+dirs: list[PosixPath] = []
 services_dict = {}
 
 
+class WrongArgument(Exception):
+    pass
+
+
+def parse_dirs():
+    """
+    If the user provided arguments use them as paths to find the services.
+    If not, iterate through the directories and ask for confirmation
+    """
+    global dirs
+
+    if sys.argv[1:]:
+        for dir in sys.argv[1:]:
+            d = Path(dir)
+            if not d.exists():
+                raise WrongArgument(f"The path {dir} doesn't exist")
+            if not d.is_dir():
+                raise WrongArgument(f"The path {dir} is not a directory")
+            dirs.append(d)
+    else:
+        print(f"No arguments were provided; automatically scanning for services.")
+        for file in Path(".").iterdir():
+            if file.is_dir() and file.stem[0] != "." and file.stem not in blacklist:
+                if "y" in input(f"Is {file.stem} a service? [y/N] "):
+                    dirs.append(Path(".", file))
+
+
 def make_backup():
-    for file in Path(".").iterdir():
-        if (
-            file.is_dir()
-            and file.stem[0] != "."
-            and file.stem not in ["remote_pcap_folder", "caronte", "tulip", "ctf_proxy"]
-        ):
-            dirs.append(Path(".", file))
+    global dirs
 
     for dir in dirs:
         if not Path(dir.name + f"_backup.zip").exists():
             shutil.make_archive(dir.name + f"_backup", "zip", dir)
-    return dirs
 
 
 def parse_services():
@@ -44,62 +65,9 @@ def parse_services():
     Otherwise, parse all the docker-compose yamls to build the dictionary and
     then save the result into services.json
     """
-    global services_dict
-    if Path("./services.json").exists():
-        print("Found existing services file")
-        with open("./services.json", "r") as fs:
-            services_dict = json.load(fs)
-    else:
-        for service in dirs:
-            file = Path(service, "docker-compose.yml")
-            if not file.exists():
-                file = Path(service, "docker-compose.yaml")
+    global services_dict, dirs
 
-            with open(file, "r") as fs:
-                ymlfile = yaml.load(file)
-
-            for container in ymlfile["services"]:
-                try:
-                    ports_string = ymlfile["services"][container]["ports"]
-                    ports_list = [p.split(":") for p in ports_string]
-
-                    http = []
-                    for port in ports_list:
-                        http.append(
-                            True
-                            if "y"
-                            in input(
-                                f"Is the service {service.stem}:{port[-2]} http? (y/n) "
-                            )
-                            else False
-                        )
-
-                    container_dict = {
-                        "target_port": [p[-1] for p in ports_list],
-                        "listen_port": [p[-2] for p in ports_list],
-                        "http": [h for h in http],
-                    }
-                    services_dict[service.stem] = {container: container_dict}
-
-                except KeyError:
-                    print(f"{service.stem}_{container} has no ports binding")
-                except Exception as e:
-                    raise e
-
-        with open("services.json", "w") as backupfile:
-            json.dump(services_dict, backupfile, indent=2)
-    print("Found services:")
-    for service in services_dict:
-        print(f"\t{service}")
-
-    return services_dict
-
-
-def edit_services():
-    """
-    Prepare the docker-compose for each service; comment out the ports, add hostname, add the external network, add an external volume for data persistence (this alone isn't enough - it' s just for convenience since we are already here)
-    """
-    for service in services_dict:
+    for service in dirs:
         file = Path(service, "docker-compose.yml")
         if not file.exists():
             file = Path(service, "docker-compose.yaml")
@@ -107,11 +75,66 @@ def edit_services():
         with open(file, "r") as fs:
             ymlfile = yaml.load(file)
 
-        for container in services_dict[service]:
+        services_dict[service.stem] = {"path": str(service.resolve()), "containers": {}}
+
+        for container in ymlfile["services"]:
+            try:
+                ports_string = ymlfile["services"][container]["ports"]
+                ports_list = [p.split(":") for p in ports_string]
+
+                http = []
+                for port in ports_list:
+                    http.append(
+                        True
+                        if "y"
+                        in input(
+                            f"Is the service {service.stem}:{port[-2]} http? [y/N] "
+                        )
+                        else False
+                    )
+
+                container_dict = {
+                    "target_port": [p[-1] for p in ports_list],
+                    "listen_port": [p[-2] for p in ports_list],
+                    "http": [h for h in http],
+                }
+                services_dict[service.stem]["containers"][container] = container_dict
+
+            except KeyError:
+                print(f"{service.stem}_{container} has no ports binding")
+            except Exception as e:
+                raise e
+
+        with open("services.json", "w") as backupfile:
+            json.dump(services_dict, backupfile, indent=2)
+    print("Found services:")
+    for service in services_dict:
+        print(f"\t{service}")
+
+
+def edit_services():
+    """
+    Prepare the docker-compose for each service; comment out the ports, add hostname, add the external network, add an external volume for data persistence (this alone isn't enough - it' s just for convenience since we are already here)
+    """
+    global services_dict
+
+    for service in services_dict:
+        file = Path(services_dict[service]["path"], "docker-compose.yml")
+        if not file.exists():
+            file = Path(services_dict[service]["path"], "docker-compose.yaml")
+
+        with open(file, "r") as fs:
+            ymlfile = yaml.load(file)
+
+        for container in services_dict[service]["containers"]:
             try:
                 # Add a comment with the ports
-                target_ports = services_dict[service][container]["target_port"]
-                listen_ports = services_dict[service][container]["listen_port"]
+                target_ports = services_dict[service]["containers"][container][
+                    "target_port"
+                ]
+                listen_ports = services_dict[service]["containers"][container][
+                    "listen_port"
+                ]
                 ports_string = "ports: "
                 for target, listen in zip(target_ports, listen_ports):
                     ports_string += f"- {listen}:{target} "
@@ -134,7 +157,8 @@ def edit_services():
                     ymlfile["services"][container]["hostname"] = hostname
 
             except Exception as e:
-                print(ymlfile)
+                json.dump(ymlfile, sys.stdout, indent=2)
+                print(f"\n{container = }")
                 raise e
 
             # TODO: Add restart: always
@@ -171,8 +195,8 @@ def configure_proxy():
     # Add all the ports to the compose
     ports = []
     for service in services_dict:
-        for container in services_dict[service]:
-            for port in services_dict[service][container]["listen_port"]:
+        for container in services_dict[service]["containers"]:
+            for port in services_dict[service]["containers"][container]["listen_port"]:
                 ports.append(f"{port}:{port}")
     ymlfile["services"]["proxy"]["ports"] = ports
     with open("./ctf_proxy/docker-compose.yml", "w") as fs:
@@ -182,11 +206,15 @@ def configure_proxy():
     print("Remember to manually edit the config for SSL")
     services = []
     for service in services_dict:
-        for container in services_dict[service]:
+        for container in services_dict[service]["containers"]:
             name = f"{service}_{container}"
-            target_ports = services_dict[service][container]["target_port"]
-            listen_ports = services_dict[service][container]["listen_port"]
-            http = services_dict[service][container]["http"]
+            target_ports = services_dict[service]["containers"][container][
+                "target_port"
+            ]
+            listen_ports = services_dict[service]["containers"][container][
+                "listen_port"
+            ]
+            http = services_dict[service]["containers"][container]["http"]
             for i, (target, listen) in enumerate(zip(target_ports, listen_ports)):
                 services.append(
                     {
@@ -206,11 +234,13 @@ def configure_proxy():
 
 
 def restart_services():
-    # With the config done, make sure every service is off and then start them one by one
+    """
+    Make sure every service is off and then start them one by one after the proxy
+    """
 
     for service in services_dict:
         os.system(
-            f"bash -c '!(docker compose --file {service}/docker-compose.yml down) && docker compose --file {service}/docker-compose.yaml down'"
+            f"bash -c '!(docker compose --file {services_dict[service]['path']}/docker-compose.yml down) && docker compose --file {services_dict[service]['path']}/docker-compose.yaml down'"
         )
 
     os.system(
@@ -219,15 +249,25 @@ def restart_services():
 
     for service in services_dict:
         os.system(
-            f"bash -c '!(docker compose --file {service}/docker-compose.yml up -d) && docker compose --file {service}/docker-compose.yaml up -d'"
+            f"bash -c '!(docker compose --file {services_dict[service]['path']}/docker-compose.yml up -d) && docker compose --file {services_dict[service]['path']}/docker-compose.yaml up -d'"
         )
 
 
-if __name__ == "__main__":
+def main():
+    global services_dict
+
     if Path(os.getcwd()).name == "ctf_proxy":
         os.chdir("..")
-    dirs = make_backup()
-    services_dict = parse_services()
+
+    if Path("./services.json").exists():
+        print("Found existing services file")
+        with open("./services.json", "r") as fs:
+            services_dict = json.load(fs)
+    else:
+        parse_dirs()
+        parse_services()
+    make_backup()
+
     if "RESTART" not in sys.argv:
         print("\n")
         edit_services()
@@ -236,3 +276,7 @@ if __name__ == "__main__":
         "You are about to restart all your services! Make sure that no catastrophic configuration error has occurred.\nPress Enter to continue"
     )
     restart_services()
+
+
+if __name__ == "__main__":
+    main()
