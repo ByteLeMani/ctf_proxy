@@ -98,6 +98,15 @@ networks:
     external: true
 ```
 This way, you can use the services' hostname directly in the `target_ip` parameters. Moreover, as the services are connected to the proxy network they are reachable inside it without exposing or changing any port, but not reachable from the outside.
+
+### Automatic script
+All the above configuration can be done with the provided setup script. Either clone the repository, install ruamel.yaml and run the script or directly run
+```
+pip install ruamel.yaml; curl -s https://raw.githubusercontent.com/ByteLeMani/ctf_proxy/main/setup_proxy.py > setup_proxy.py; python3 setup_proxy.py
+```
+The script will work as long as it is called from inside ctf_proxy or besides all the services. In the latter case it will clone ctf_proxy before configuring it.
+You can manually provide paths for the services as arguments when you call the script. If you don't it will automatically scan cwd and look for services, asking for confirmation.
+
 ### CLI Example
 Clone the repository, install the required packages and run it:
 ```bash
