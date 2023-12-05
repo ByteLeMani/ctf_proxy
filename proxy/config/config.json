@@ -6,17 +6,6 @@
             "target_port": 80,
             "listen_port": 80,
             "http": true
-        },
-        {
-            "name": "https_service",
-            "target_ip": "https_service",
-            "target_port": 443,
-            "listen_port": 443,
-            "http": true,
-            "ssl": {
-                "server_certificate": "example.pem",
-                "server_key": "example.pem"
-            }
         }
     ],
     
@@ -24,7 +13,7 @@
         "keyword": "EH! VOLEVI",
         "verbose": false,
         "dos": {
-            "enabled": false,
+            "enabled": true,
             "duration": 60,
             "interval": 2
         },
