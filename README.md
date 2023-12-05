@@ -1,7 +1,19 @@
 # ctf_proxy - A TCP proxy for intercepting and dropping malicious attacks
 
-This tool is purposely made for Attack/Defence CTF competitions. 
-A proxy process is created for each configured service, with the possibility to block malicious attacks by means of custom filters.
+**ctf_proxy** creates a proxy process for each configured service, with the possibility to block malicious attacks by means of custom Python filters.
+
+This tool is purposely made for *Attack/Defense* CTF competitions. 
+
+## Features
+- Dropping or modifying TCP and HTTP messages through simple Python filters
+- Access to the previously exchanged messages over the same TCP connection for stateful filtering
+- A configurable keyword gets sent as response to attacks to easily highlight and analyze them in PCAP files
+- HTTP parsing inside filters for easy access to headers and parameters
+- Filters are automatically reloaded on the fly when modified
+- Log by printing to stdout inside filters
+- Support for SSL/TLS services by providing certificates and keys
+- Easy Docker configuration
+- **DoS**: maintain attackers' sockets alive by periodically sending bytes to massively slow down their scripts if they don't expect it
 
 ## Configuration
 You can configure each service to be proxied using `proxy/config/config.json`.
@@ -105,7 +117,11 @@ All the above configuration can be done with the provided setup script. Either c
 pip install ruamel.yaml; curl -s https://raw.githubusercontent.com/ByteLeMani/ctf_proxy/main/setup_proxy.py > setup_proxy.py; python3 setup_proxy.py
 ```
 The script will work as long as it is called from inside ctf_proxy or besides all the services. In the latter case it will clone ctf_proxy before configuring it.
+
 You can manually provide paths for the services as arguments when you call the script. If you don't it will automatically scan cwd and look for services, asking for confirmation.
+```
+python3 setup_proxy.py /path/to/service1 /path/to/service2 ...
+```
 
 ### CLI Example
 Clone the repository, install the required packages and run it:
@@ -126,12 +142,12 @@ Inside the modules you will find an `execute` method that receives a ***Stream o
 :warning: Note that `dos` may not work properly if `ssl` is enabled :warning:
 
 ### Stream
-**Stream** is the interface for **TCPStream** and **HTTPStream** and contains the current and previous received messages on the socket.
+**Stream** is the interface for **TCPStream** and **HTTPStream** classes and contains the current and previous exchanged messages on the socket.
 
 #### TCPStream
-TCPStream is used in case of TCP only connections. The `previous_messages` queue contains the latest `max_stored_messages` messages that went through the socket before the current received message. The latter will be stored in the `current_message` variable and can be modified to alter the content of the message that will be sent from the proxy.
+TCPStream is used in case of TCP only connections. The `previous_messages` queue contains the latest `max_stored_messages` messages that went through the socket before the current received message. The latter will be stored in the `current_message` variable and can be modified to alter the content of the message that will be sent from the proxy. Note that in this case you should return False inside the filter to not drop the connection.
 #### HTTPStream
-HTTPStream is used in case of HTTP connections. Now two more variables are available: `previous_http_messages` and `current_http_message`. They are the parsed version of the correspective raw variables as `HttpMessage` objects. The actual values sent through the socket are the ones stored in `current_message`, which means you should edit this variable to alter the content of the message sent from the proxy.
+HTTPStream is used in case of HTTP connections. Two more variables are available: `previous_http_messages` and `current_http_message`. They are the parsed version of the correspective raw variables as `HttpMessage` objects. The actual values sent through the socket are the ones stored in `current_message`, which means you should edit this variable to alter the content of the message sent from the proxy.
 
 :warning: Watch out for `Content-Length` header in the raw HTTP message if you intend to modify it. :warning:
 
@@ -141,7 +157,7 @@ To add a new filter, define a new function inside the class Module called as the
 Every module will be ***automatically reloaded on the fly*** by simply modifying it. If an exception is thrown during the import, the module will not be loaded and the previous version will be used instead. If an exception is thrown at runtime, the packet will simply flow through the proxy.
 
 ### Database
-To add persistance to the filters, you can build and use the local Mongo database. You can access the database inside the modules through the `DBManager` interface. You can find some examples in `proxy/filter_modules/example_functions.py`.
+For stateful filters, you can build and use the local Mongo database. You can access the database inside the modules through the `DBManager` interface. You can find some examples in `proxy/filter_modules/example_functions.py`.
 
 ## Logging
 A simple log file `proxy/log.txt` will count all the blocked packets for each service. If the file already exists at startup, the proxy will update the counts based on their initial value inside the file. Otherwise, the file will be created at startup.
