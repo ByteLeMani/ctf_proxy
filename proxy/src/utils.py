@@ -89,11 +89,11 @@ def filter_packet(data, filter_module):
     return None
 
 
-def block_packet(local_socket: socket.socket, remote_socket, block_answer: str, dos: dict = None):
+def block_packet(local_socket: socket.socket, socket_family, remote_socket, block_answer: str, dos: dict = None):
     remote_socket.close()
     if isinstance(local_socket, ssl.SSLSocket):
         local_socket = socket.fromfd(
-            local_socket.detach(), socket.AF_INET, socket.SOCK_STREAM)
+            local_socket.detach(), socket_family, socket.SOCK_STREAM)
 
     local_socket.send(block_answer.encode())
     if dos.get("enabled"):

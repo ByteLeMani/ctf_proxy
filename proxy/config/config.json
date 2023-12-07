@@ -1,23 +1,35 @@
 {
-    "services": [
-        {
-            "name": "http_service",
-            "target_ip": "http_service",
-            "target_port": 80,
-            "listen_port": 80,
-            "http": true
-        }
-    ],
-    
-    "global_config": {
-        "keyword": "EH! VOLEVI",
-        "verbose": false,
-        "dos": {
-            "enabled": true,
-            "duration": 60,
-            "interval": 2
-        },
-        "max_stored_messages": 10,
-        "max_message_size": 65535
-    }
+  "services": [
+      {
+          "name": "http_service",
+          "target_ip": "http_service",
+          "target_port": 80,
+          "listen_port": 80,
+          "http": true
+      },
+      {
+          "name": "https_service",
+          "target_ip": "https_service",
+          "target_port": 443,
+          "listen_port": 443,
+          "http": true,
+          "ssl": {
+              "server_certificate": "example.pem",
+              "server_key": "example.pem"
+          }
+      }
+  ],
+  
+  "global_config": {
+      "keyword": "EH! VOLEVI",
+      "verbose": false,
+      "failover_timeout": 5,
+      "dos": {
+          "enabled": false,
+          "duration": 60,
+          "interval": 2
+      },
+      "max_stored_messages": 10,
+      "max_message_size": 65535
+  }
 }

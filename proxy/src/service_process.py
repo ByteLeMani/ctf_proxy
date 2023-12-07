@@ -14,6 +14,13 @@ import os
 import src.utils as utils
 import src.ssl_utils as ssl_utils
 
+def get_address_family(host):
+    try:
+        result = socket.getaddrinfo(host, 0, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        return result[0][0]
+    except socket.gaierror as e:
+        print(f"Error resolving host: {e}")
+        return None
 
 def service_function(service: Service, global_config, count):
     in_module, out_module = import_modules(service.name, False)
@@ -26,7 +33,7 @@ def service_function(service: Service, global_config, count):
     observer.start()
 
     # this is the socket we will listen on for incoming connections
-    proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    proxy_socket = socket.socket(get_address_family(service.listen_ip), socket.SOCK_STREAM)
     proxy_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
         proxy_socket.bind((service.listen_ip, service.listen_port))
@@ -40,8 +47,7 @@ def service_function(service: Service, global_config, count):
     try:
         while True:
             in_socket, in_addrinfo = proxy_socket.accept()
-            utils.vprint('Connection from %s:%d' %
-                         in_addrinfo, global_config["verbose"])
+            utils.vprint(f'Connection from {in_addrinfo[0]},{in_addrinfo[1]}', global_config["verbose"])
             proxy_thread = threading.Thread(target=connection_thread,
                                             args=(
                                                 in_socket, service, global_config,
@@ -62,12 +68,11 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
     """This method is executed in a thread. It will relay data between the local
     host and the remote host, while letting modules work on the data before
     passing it on."""
-    remote_socket = socket.socket()
+    remote_socket = socket.socket(get_address_family(service.target_ip))
 
     try:
         remote_socket.connect((service.target_ip, service.target_port))
-        utils.vprint('Connected to %s:%d' %
-                     remote_socket.getpeername(), global_config["verbose"])
+        utils.vprint(f'Connected to {remote_socket.getpeername()[0]},{remote_socket.getpeername()[1]}', global_config["verbose"])
     except socket.error as serr:
         if serr.errno == errno.ECONNREFUSED:
             for s in [remote_socket, local_socket]:
@@ -142,8 +147,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
             if sock == local_socket:
                 # going from client to service
                 if not len(stream.current_message):
-                    utils.vprint("Connection from local client %s:%d closed" %
-                                 peer, global_config["verbose"])
+                    utils.vprint(f"Connection from local client {peer[0]},{peer[1]}' closed", global_config["verbose"])
                     remote_socket.close()
                     local_socket.close()
                     connection_open = False
@@ -156,8 +160,7 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
             else:
                 # going from service to client
                 if not len(stream.current_message):
-                    utils.vprint("Connection from remote server %s:%d closed" %
-                                 peer, global_config["verbose"])
+                    utils.vprint(f"Connection from remote server {peer[0]},{peer[1]} closed", global_config["verbose"])
                     remote_socket.close()
                     local_socket.close()
                     connection_open = False
@@ -169,10 +172,9 @@ def connection_thread(local_socket: socket.socket, service: Service, global_conf
                     local_socket.send(stream.current_message)
 
             if attack:
-                utils.vprint("Connection %s:%d BLOCKED" %
-                             peer, global_config["verbose"])
+                utils.vprint(f"Connection {peer[0]},{peer[1]} BLOCKED", global_config["verbose"])
                 count.value += 1
                 block_answer = global_config["keyword"] + " " + service.name + " " + attack
-                utils.block_packet(local_socket, remote_socket, block_answer, global_config.get("dos", None))
+                utils.block_packet(local_socket, get_address_family(service.listen_ip), remote_socket, block_answer, global_config.get("dos", None))
                 connection_open = False
                 break

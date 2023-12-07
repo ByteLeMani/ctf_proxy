@@ -28,7 +28,7 @@ class SSLConfig:
 
 
 class Service:
-    def __init__(self, name: str, target_ip: str, target_port: int, listen_port: int, listen_ip: str = "0.0.0.0", http = False, ssl=None):
+    def __init__(self, name: str, target_ip: str, target_port: int, listen_port: int, listen_ip: str = "::", http = False, ssl=None):
         self.name = name
         self.target_ip = target_ip
         self.target_port = target_port

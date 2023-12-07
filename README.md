@@ -12,7 +12,9 @@ This tool is purposely made for *Attack/Defense* CTF competitions.
 - Filters are automatically reloaded on the fly when modified
 - Log by printing to stdout inside filters
 - Support for SSL/TLS services by providing certificates and keys
+- Support for IPv6
 - Easy Docker configuration
+- Proxy *failover* mechanism using NGINX
 - **DoS**: maintain attackers' sockets alive by periodically sending bytes to massively slow down their scripts if they don't expect it
 
 ## Configuration
@@ -46,6 +48,7 @@ You can configure each service to be proxied using `proxy/config/config.json`.
     "global_config": {
         "keyword": "KEYWORD FOR PACKET ANALYZERS",
         "verbose": false,
+        "failover_timeout": 5,
         "dos": {
             "enabled": true,
             "duration": 60,
@@ -63,7 +66,6 @@ In the `services` list, the following parameters can be set for each service:
 - **target_ip**: service IP/hostname
 - **target_port**: service port
 - **listen_port**: proxy port to listen on
-- **listen_ip**: *(optional)* IP where the proxy will listen on, default=```"0.0.0.0"```
 - **http**: *(optional)* must be set to `true` to enable HTTP parsing, default=```False```
 - **ssl**: *(optional, required for SSL services)* set SSL files for secure communication. Each file will be looked in the `proxy/config/certificates` folder:
   - **server_certificate**: server certificate in PEM format
@@ -74,6 +76,7 @@ In the `services` list, the following parameters can be set for each service:
 The `global_config` contains:
 - **keyword**: string to be sent as response to malicious packets, to facilitate packet inspections
 - **verbose**: verbose mode
+- **failover_timeout**: (*seconds*) timeout given to NGINX to declare the proxy as down when trying a connection 
 - **dos**: slow down attackers by keeping the socket alive:
     - **enabled**: *(boolean)*
     - **duration**: *(seconds)* time to wait before closing the socket
@@ -82,9 +85,6 @@ The `global_config` contains:
 - **max_message_size**: maximum message size after which the message will be truncated before being stored in the `previous_messages` queue in the Stream objects
 
 ## Usage
-The tool can be used as a Docker container or as a CLI Python application.
-
-### Docker Example
 Clone the repository:
 ```
 git clone https://github.com/ByteLeMani/ctf_proxy
@@ -121,15 +121,6 @@ The script will work as long as it is called from inside ctf_proxy or besides al
 You can manually provide paths for the services as arguments when you call the script. If you don't it will automatically scan cwd and look for services, asking for confirmation.
 ```
 python3 setup_proxy.py /path/to/service1 /path/to/service2 ...
-```
-
-### CLI Example
-Clone the repository, install the required packages and run it:
-```bash
-git clone https://github.com/ByteLeMani/ctf_proxy
-cd ./ctf_proxy/proxy
-pip install -r requirements.txt
-python3 proxy.py
 ```
 
 ## Modules
