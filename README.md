@@ -17,6 +17,14 @@ This tool is purposely made for *Attack/Defense* CTF competitions.
 - Proxy *failover* mechanism using NGINX
 - **DoS**: maintain attackers' sockets alive by periodically sending bytes to massively slow down their scripts if they don't expect it
 
+## Architecture
+![architecture](https://github.com/ByteLeMani/ctf_proxy/assets/93737876/98537110-24c3-4e18-a4c9-f3b410d1245f)
+This architecture implements a failover mechanism through the usage of NGINX: 
+- ***ctf_proxy* is up and running**: all traffic will flow through it, filtering every attack coming in the way
+- ***ctf_proxy* down**: the proxy will be bypassed to ensure maximum service availability throughout the competition.
+
+In this way, *ctf_proxy* is not a single point of failure but gives this responsibility to NGINX, which is a much more static and robust component.
+
 ## Configuration
 You can configure each service to be proxied using `proxy/config/config.json`.
 
@@ -97,7 +105,12 @@ ports:
   - 9090:9090
 ```
 
-Then run the container:
+Edit the proxy configuration file at `proxy/config/config.json`.
+
+Edit the NGINX configuration file at `nginx/nginx.conf`. This can be done automatically by using the provided script `generate_nginx_conf.py` after setting the proxy configuration.
+Note: NGINX will start after all services will be available.
+
+Run the container:
 ```bash
 docker compose up --build -d
 ```
@@ -110,6 +123,8 @@ networks:
     external: true
 ```
 This way, you can use the services' hostname directly in the `target_ip` parameters. Moreover, as the services are connected to the proxy network they are reachable inside it without exposing or changing any port, but not reachable from the outside.
+
+Note: the network must already exist, so the proxy should be run before the services.
 
 ### Automatic script
 All the above configuration can be done with the provided setup script. Either clone the repository, install ruamel.yaml and run the script or directly run
