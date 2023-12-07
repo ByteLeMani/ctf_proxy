@@ -55,7 +55,11 @@ You can configure each service to be proxied using `proxy/config/config.json`.
     "global_config": {
         "keyword": "KEYWORD FOR PACKET ANALYZERS",
         "verbose": false,
-        "failover_timeout": 5,
+        "nginx": {
+            "connect_timeout": 5,
+            "max_fails": 1,
+            "fail_timeout": 20
+        },
         "dos": {
             "enabled": true,
             "duration": 60,
@@ -83,7 +87,10 @@ In the `services` list, the following parameters can be set for each service:
 The `global_config` contains:
 - **keyword**: string to be sent as response to malicious packets, to facilitate packet inspections
 - **verbose**: verbose mode
-- **failover_timeout**: (*seconds*) timeout given to NGINX to declare the proxy as down when trying a connection 
+- **nginx**: failover configurations:
+    - **connect_timeout**: (*seconds*) timeout given to NGINX to declare the proxy as down when trying a connection 
+    - **fail_timeout**: (*seconds*) sets the time during which the specified number of unsuccessful attempts to communicate with the server should happen to consider the server unavailable and the period of time the server will be considered unavailable.
+    - **max_fails**: (*seconds*) sets the number of unsuccessful attempts to communicate with the server that should happen in the duration set by the `fail_timeout` parameter to consider the server unavailable.
 - **dos**: slow down attackers by keeping the socket alive:
     - **enabled**: *(boolean)*
     - **duration**: *(seconds)* time to wait before closing the socket
@@ -105,9 +112,6 @@ ports:
 ```
 
 Edit the proxy configuration file at `proxy/config/config.json`.
-
-Edit the NGINX configuration file at `nginx/nginx.conf`. This can be done automatically by using the provided script `generate_nginx_conf.py` after setting the proxy configuration.
-Note: NGINX will start after all services will be available.
 
 Run the container:
 ```bash
