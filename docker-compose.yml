@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: nginx:latest
+    build: "./nginx"
     hostname: nginx
     container_name: nginx
     ports:
@@ -23,6 +23,8 @@ services:
       PYTHONUNBUFFERED: 1
     volumes:
      - "./proxy:/proxy"
+     - "./nginx/nginx.conf:/nginx.conf"
+    
 networks:
   default:
     name: ctf_network

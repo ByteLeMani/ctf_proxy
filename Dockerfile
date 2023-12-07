@@ -6,4 +6,4 @@ WORKDIR /proxy
 
 RUN pip install -r requirements.txt
 
-CMD ["python3", "proxy.py"]
+CMD ["bash", "init.sh"]

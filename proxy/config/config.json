@@ -23,7 +23,11 @@
   "global_config": {
       "keyword": "EH! VOLEVI",
       "verbose": false,
-      "failover_timeout": 5,
+      "nginx": {
+        "connect_timeout": 5,
+        "max_fails": 1,
+        "fail_timeout": 20
+      },
       "dos": {
           "enabled": false,
           "duration": 60,
