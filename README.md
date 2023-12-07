@@ -43,7 +43,6 @@ You can configure each service to be proxied using `proxy/config/config.json`.
             "target_port": 443,
             "listen_port": 500,
             "http": true,
-            "listen_ip": "0.0.0.0",
             "ssl": {
                 "server_certificate": "server.pem",
                 "server_key": "server.pem",
