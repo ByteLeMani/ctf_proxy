@@ -1,6 +1,7 @@
 services:
   http_service:
     image: httpd
+    hostname: http_service
     # ports:
       # - 80:80
 

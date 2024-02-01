@@ -1,6 +1,7 @@
 services:
   https_service:
     image: inanimate/httpd-ssl
+    hostname: https_service
     # ports:
       # - 443:443
 

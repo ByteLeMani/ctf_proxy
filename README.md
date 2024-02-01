@@ -115,6 +115,9 @@ Run the container:
 ```bash
 docker compose up --build -d
 ```
+
+:warning: NGINX at boot requires all services to be up and running. It may cause restart loops until you start all containers. :warning:
+
 #### FOR A/D CONTAINERIZED SERVICES
 You may want to add this configuration to the services docker-compose.yml file and ***remove any address/port binding*** it may have, to take advantage of the docker network DNS.
 ```yml
