@@ -25,6 +25,7 @@ class SSLConfig:
     server_key: str
     client_certificate: str = None
     client_key: str = None
+    ca_file: str = None
 
 
 class Service:
