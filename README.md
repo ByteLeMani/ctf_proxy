@@ -1,4 +1,4 @@
-# ctf_proxy - A TCP proxy for intercepting and dropping malicious attacks
+# ctf_proxy - An Intrusion Prevention System for Attack-Defense CTFs
 
 **ctf_proxy** creates a proxy process for each configured service, with the possibility to block malicious attacks by means of custom Python filters.
 
