@@ -30,6 +30,9 @@ def enable_ssl(ssl_config, remote_socket, local_socket):
         ctx.load_cert_chain(certfile=os.path.join(CERTIFICATES_PATH, ssl_config.server_certificate),
                             keyfile=os.path.join(CERTIFICATES_PATH, ssl_config.server_key)
                             )
+        if ssl_config.ca_file:
+            ctx.verify_mode = ssl.CERT_REQUIRED
+            ctx.load_verify_locations(cafile=os.path.join(CERTIFICATES_PATH, ssl_config.ca_file))
         local_socket = ctx.wrap_socket(local_socket,
                                        server_side=True,
                                        suppress_ragged_eofs=True

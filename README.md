@@ -45,7 +45,8 @@ You can configure each service to be proxied using `proxy/config/config.json`.
                 "server_certificate": "server.pem",
                 "server_key": "server.pem",
                 "client_certificate": "client_crt.pem",
-                "client_key": "client_key.pem"
+                "client_key": "client_key.pem",
+                "ca_file": "ca_file.pem"
             }
         }
     ],
@@ -77,10 +78,11 @@ In the `services` list, the following parameters can be set for each service:
 - **listen_port**: proxy port to listen on
 - **http**: *(optional)* must be set to `true` to enable HTTP parsing, default=```False```
 - **ssl**: *(optional, required for SSL services)* set SSL files for secure communication. Each file will be looked in the `proxy/config/certificates` folder:
-  - **server_certificate**: server certificate in PEM format
+  - **server_certificate**: server certificate
   - **server_key**: server key file
-  - **client_certificate**: *(optional)*: for client authentication, client certificate in PEM format
-  - **client_key**: *(optional)*: for client authentication, client key file
+  - **client_certificate**: *(optional)* for client authentication between proxy and service
+  - **client_key**: *(optional)* for client authentication between proxy and service
+  - **ca_file**: *(optional)* certificate authority for checking client authentication between client and proxy
 
 The `global_config` contains:
 - **keyword**: string to be sent as response to malicious packets, to facilitate packet inspections
