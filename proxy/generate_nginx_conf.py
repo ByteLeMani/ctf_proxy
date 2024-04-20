@@ -24,7 +24,7 @@ stream {{
 
 template = """
     upstream {service_name} {{
-        server proxy:{target_port} fail_timeout={fail_timeout}s max_fails={max_fails};
+        server proxy:{listen_port} fail_timeout={fail_timeout}s max_fails={max_fails};
         server {target_ip}:{target_port} backup;
     }}
     server {{
