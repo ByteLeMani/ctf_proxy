@@ -11,27 +11,36 @@ var filter_types = [
 const listTypes = filter_types.map(filter => <option value={filter} key={filter}>{filter}</option>);
 
 
-interface FormProps{
+interface FormProps {
     currentFilter: Filter;
     setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
     children: React.ReactNode;
 }
-export default function Form(props:FormProps) {
-    
+export default function Form(props: FormProps) {
+
     return <div className="flex justify-center">
         <label className="form-control w-full max-w-xs">
             <div className="label">
                 <span className="label-text">Choose filter type</span>
             </div>
-            <select className="select select-bordered" 
-             onChange={(e)=>{
-                // alert(JSON.stringify(props.currentFilter));
-                props.setCurrentFilter({ ...props.currentFilter, type: e.target.value })
-                
-            }}>
+            <select className="select select-bordered"
+            value={props.currentFilter.type} 
+                onChange={(e) => {
+                    // alert(JSON.stringify(props.currentFilter));
+                    props.setCurrentFilter({ ...props.currentFilter, type: e.target.value })
+
+                }}>
                 <option disabled >Choose one</option>
                 {listTypes}
             </select>
+
+            <div className="label">
+                <span className="label-text">Edit pattern</span>
+            </div>
+            <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e)=>{props.setCurrentFilter({...props.currentFilter, pattern: e.target.value})}}>
+                
+            </textarea>
+
             {props.children}
         </label>
     </div>

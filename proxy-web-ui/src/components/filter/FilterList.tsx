@@ -13,6 +13,7 @@ export default function FilterList() {
 
     const [currentItem, setCurrentItem] = useState<Filter>(items[0]);
     const [newItem, setNewItem] = useState<Filter>(items[0]);
+    const [removePort, setRemovePort] = useState<number>(0); 
 
 
     const handleEdit = function(){
@@ -21,6 +22,10 @@ export default function FilterList() {
               item.port === currentItem.port ? newItem  : item
             )
           );
+    }
+
+    const handleRemove = function(){
+        setItems((prevItems) => prevItems.filter((item) => item.port !== removePort));
     }
 
     
@@ -33,6 +38,7 @@ export default function FilterList() {
 
     const openRemoveModal = function(item:Filter){
         setCurrentItem(item);
+        setRemovePort(item.port)
         document!!.getElementById('remove_modal')!!.showModal();
     }
     
@@ -51,7 +57,7 @@ export default function FilterList() {
             </thead>
             <tbody className="text-center">
                 {items.map((item:Filter) => {
-                    return <FilterRow key={item.port} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} newFilter={newItem} setNewFilter={setNewItem}/>
+                    return <FilterRow key={item.port} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} handleRemove={handleRemove} newFilter={newItem} setNewFilter={setNewItem} />
                 })}
             </tbody>
         </table>

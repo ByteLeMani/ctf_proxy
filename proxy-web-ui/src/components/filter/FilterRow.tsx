@@ -9,11 +9,12 @@ interface FilterRowProps{
     newFilter: Filter;
     setNewFilter: React.Dispatch<React.SetStateAction<Filter>>;
     handleEdit: ()=>void;
+    handleRemove: ()=>void;
     openEditModal: (filter: Filter)=>void;
     openRemoveModal: (filter: Filter)=>void;
 }
 
-function FilterRow({filter, newFilter, setNewFilter, handleEdit, openEditModal, openRemoveModal}:FilterRowProps) {
+function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, openEditModal, openRemoveModal}:FilterRowProps) {
     return <>
         <tr>
             <td className="border"><span className="rounded-lg p-2 bg-lime-400">{filter.port}</span></td>
@@ -37,7 +38,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, openEditModal, 
                     onClick={()=>{openRemoveModal(filter)}}>
                     <icons.Remove/>
                 </ActionButton>
-                <FilterModal.Remove/>
+                <FilterModal.Remove filter={newFilter} handleRemove={handleRemove}/>
             </td>
         </tr>
     </>
