@@ -27,7 +27,9 @@ function App() {
             </div>
             <FilterList/>
 
-            <p className="absolute bottom-0 left-0 end-1">Copyright &#169; 2024 - Made with ❤️ by <a href='https://github.com/ByteLeMani/'>@ByteLeMani</a></p>
+           <div className="flex absolute bottom-0 justify-center items-center w-full">
+           <p>Copyright &#169; 2024 - Made with ❤️ by <a href='https://github.com/ByteLeMani/'>@ByteLeMani</a></p>
+           </div>
         </div>
 
     </>
