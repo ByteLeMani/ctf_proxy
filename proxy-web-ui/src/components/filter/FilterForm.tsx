@@ -25,7 +25,7 @@ interface FormProps {
     children: React.ReactNode;
 }
 export default function Form(props: FormProps) {
-    const [isCustom, setIsCustom] = useState<Boolean>(false);
+    const [isCustom, setIsCustom] = useState<Boolean>(props.currentFilter.pattern.includes("Custom"));
 
     return <div className="w-full flex flex-col items-center">
         <label className="form-control w-full max-w-xs">
