@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Filter } from "../../models/Filter";
 import FilterRow from "./FilterRow";
 import ActionButton from "../ActionButton";
 import icons from "../../icons/icons";
-import FilterModal from "./FilterModal";
+import Add from "./modals/AddModal";
 
 
 
@@ -61,7 +61,7 @@ export default function FilterList() {
             <p className="text-4xl">Filters</p>
             <ActionButton color='bg-blue-400' onClick={() => {openAddModal(newItem)}}><icons.Add /></ActionButton>
         </div>
-        <FilterModal.Add filter={newItem} setNewFilter={setNewItem} handleAdd={handleAdd}/>
+        <Add filter={newItem} setNewFilter={setNewItem} handleAdd={handleAdd}/>
         <div className="list-filters content-center mt-3">
             <table className="table-auto w-full border">
                 <thead>

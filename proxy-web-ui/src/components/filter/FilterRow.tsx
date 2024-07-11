@@ -1,7 +1,7 @@
 import ActionButton from "../ActionButton"
 import icons from "../../icons/icons"
-import FilterModal from "./FilterModal";
-import { useState } from "react";
+import Edit from "./modals/EditModal";
+import Remove from "./modals/RemoveModal";
 import { Filter } from "../../models/Filter";
 
 interface FilterRowProps{
@@ -35,7 +35,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
                     onClick={()=>{openEditModal(filter)}}>
                     <icons.Edit/>
                 </ActionButton>
-                <FilterModal.Edit filter={newFilter} setNewFilter={setNewFilter} handleEdit={handleEdit}/>
+                <Edit filter={newFilter} setNewFilter={setNewFilter} handleEdit={handleEdit}/>
             </td>
             
             <td className="border">
@@ -44,7 +44,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
                     onClick={()=>{openRemoveModal(filter)}}>
                     <icons.Remove/>
                 </ActionButton>
-                <FilterModal.Remove handleRemove={handleRemove}/>
+                <Remove handleRemove={handleRemove}/>
             </td>
         </tr>
     </>
