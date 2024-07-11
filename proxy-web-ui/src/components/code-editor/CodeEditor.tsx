@@ -3,8 +3,15 @@
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { useEffect } from "react";
 import * as Monaco from 'monaco-editor';
+import { Filter } from "../../models/Filter";
 
-export default function CodeEditor() {
+
+interface EditorProps {
+  currentFilter: Filter;
+  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
+}
+
+export default function CodeEditor({currentFilter, setCurrentFilter}:EditorProps) {
 
   const monaco = useMonaco();
 
@@ -36,7 +43,8 @@ export default function CodeEditor() {
       width="100vh"
       height="30vh"
       defaultLanguage="python"
-      defaultValue="def username(self, stream: HTTPStream):
+      defaultValue="# make some changes here or it will not be updated
+      def username(self, stream: HTTPStream):
     message = stream.current_http_message
     if 'register' in message.url and 'POST' in message.method:
         username = message.parameters.get('username')
@@ -44,6 +52,7 @@ export default function CodeEditor() {
             return True
     else:
         return False"
+        onChange={(value)=>{setCurrentFilter({...currentFilter, pattern: value ? value : ""})}}
     />
   );
 }

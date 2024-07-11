@@ -63,7 +63,7 @@ export default function Form(props: FormProps) {
             </div>
 
             {isCustom ?
-                <CodeEditor /> :
+                <CodeEditor currentFilter={props.currentFilter} setCurrentFilter={props.setCurrentFilter}/> :
                 <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
                 </textarea>
             }
