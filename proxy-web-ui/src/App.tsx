@@ -2,11 +2,17 @@ import './App.css'
 import ActionButton from './components/ActionButton'
 import Divider from './components/Divider'
 import FilterList from './components/filter/FilterList'
-import SericeRow from './components/ServiceRow'
+import ServiceRow from './components/ServiceRow'
 import Icons from './icons/icons'
-import FilterModal from './components/filter/FilterModal'
+
+
 
 function App() {
+
+  var serviceList = [
+    {name :"CCForms", iport: 3005, oport: 3000},
+    {name :"CCalendar", iport: 4005, oport: 4000}
+  ]
   
   return (
     <>
@@ -14,18 +20,20 @@ function App() {
             <h1 className="text-6xl text-center">CTF-Proxy</h1>
             <div className="flex justify-between">
                 <p className="text-4xl">Active Services</p>
-                <ActionButton color='bg-blue-400' onClick={()=>{}}><Icons.Add/></ActionButton>
+                <ActionButton color='bg-blue-400'><Icons.Add/></ActionButton>
             </div>
             <div className="list-services mt-3 space-y-2 mb-3">
-                {/* <!-- think of these as components --> */}
-                 <SericeRow name='CCForms' ports='3005:3000'/>
-                 <SericeRow name='CCalendar' ports='4005:4000'/>
+                {
+                  serviceList.map((service)=>{
+                    return <ServiceRow key={service.name} name={service.name} ports={`${service.iport}:${service.oport}`}/>
+                  })
+                }
             </div>
             <Divider/>
             
             <FilterList/>
 
-           <div className="flex absolute bottom-0 justify-center items-center w-full">
+           <div className="flex absolute bottom-2 justify-center items-center w-full">
            <p>Copyright &#169; 2024 - Made with ❤️ by <a href='https://github.com/ByteLeMani/'>@ByteLeMani</a></p>
            </div>
         </div>

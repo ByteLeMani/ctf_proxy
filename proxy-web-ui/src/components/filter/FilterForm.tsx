@@ -23,7 +23,7 @@ interface FormProps {
     setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
     children: React.ReactNode;
 }
-export default function FormEdit(props: FormProps) {
+export default function Form(props: FormProps) {
 
     return <div className="flex justify-center">
         <label className="form-control w-full max-w-xs">
@@ -33,7 +33,6 @@ export default function FormEdit(props: FormProps) {
             <select className="select select-bordered"
                 value={props.currentFilter.port}
                 onChange={(e) => {
-                    // alert(JSON.stringify(props.currentFilter));
                     props.setCurrentFilter({ ...props.currentFilter, port: parseInt(e.target.value) })
 
                 }}>
@@ -46,7 +45,6 @@ export default function FormEdit(props: FormProps) {
             <select className="select select-bordered"
                 value={props.currentFilter.type}
                 onChange={(e) => {
-                    // alert(JSON.stringify(props.currentFilter));
                     props.setCurrentFilter({ ...props.currentFilter, type: e.target.value })
 
                 }}>

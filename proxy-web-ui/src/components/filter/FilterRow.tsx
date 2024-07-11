@@ -44,7 +44,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
                     onClick={()=>{openRemoveModal(filter)}}>
                     <icons.Remove/>
                 </ActionButton>
-                <FilterModal.Remove filter={newFilter} handleRemove={handleRemove}/>
+                <FilterModal.Remove handleRemove={handleRemove}/>
             </td>
         </tr>
     </>

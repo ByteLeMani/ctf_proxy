@@ -1,6 +1,6 @@
 import ActionButton from "./ActionButton"
 import icons from "../icons/icons"
-function SericeRow({name, ports}:{name:string, ports:string}) {
+function ServiceRow({name, ports}:{name:string, ports:string}) {
 
     return (
         <>
@@ -31,4 +31,4 @@ function SericeRow({name, ports}:{name:string, ports:string}) {
     )
 }
 
-export default SericeRow
+export default ServiceRow

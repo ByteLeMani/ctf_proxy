@@ -32,7 +32,6 @@ export default function FilterList() {
     }
 
     const handleRemove = function () {
-        // alert("Removing:" + JSON.stringify(items.filter((item) => item.port == removePort)))
         setItems((prevItems) => prevItems.filter((item) => item.id !== removeId));
     }
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FormEdit from "./FilterEditForm";
+import Form from "./FilterForm";
 import { Filter } from "../../models/Filter";
 
 // interface EditProps {
@@ -18,21 +18,20 @@ function Edit({ filter, setNewFilter, handleEdit }: EditProps) {
   return <dialog id="edit_modal" className="modal">
     <div className="modal-box">
       <h3 className="text-lg font-bold">Edit Filter</h3>
-      <FormEdit currentFilter={filter} setCurrentFilter={setNewFilter}>
+      <Form currentFilter={filter} setCurrentFilter={setNewFilter}>
         <form method="dialog">
           <button className="btn" onClick={handleEdit}>Confirm</button>
         </form>
-      </FormEdit>
+      </Form>
     </div>
   </dialog>
 }
 
 interface RemoveProps {
-  filter: Filter;
   handleRemove: () => void;
 }
 
-function Remove({filter, handleRemove}:RemoveProps) {
+function Remove({handleRemove}:RemoveProps) {
   
   return <dialog id="remove_modal" className="modal">
     <div className="modal-box">
@@ -61,11 +60,11 @@ function Add({filter, handleAdd, setNewFilter}:AddProps) {
   return <dialog id="add_modal" className="modal">
     <div className="modal-box">
       <h3 className="text-lg font-bold">Edit Filter</h3>
-      <FormEdit currentFilter={filter} setCurrentFilter={setNewFilter}>
+      <Form currentFilter={filter} setCurrentFilter={setNewFilter}>
         <form method="dialog">
           <button className="btn" onClick={handleAdd}>Confirm</button>
         </form>
-      </FormEdit>
+      </Form>
     </div>
   </dialog>
 }
