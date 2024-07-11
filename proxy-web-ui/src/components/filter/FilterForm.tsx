@@ -1,5 +1,5 @@
 import { Filter } from "../../models/Filter";
-
+import CodeEditor from "../code-editor/CodeEditor";
 var filter_types = [
     "PostBody",
     "Cookie",
@@ -25,7 +25,7 @@ interface FormProps {
 }
 export default function Form(props: FormProps) {
 
-    return <div className="flex justify-center">
+    return <div className="w-full flex flex-col items-center">
         <label className="form-control w-full max-w-xs">
             <div className="label">
                 <span className="label-text">Pick the service</span>
@@ -51,12 +51,20 @@ export default function Form(props: FormProps) {
                 <option disabled >Choose one</option>
                 {listTypes}
             </select>
+        </label>
 
+        <label className="form-control w-full flex flex-col items-center">
+            {/* <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
+            </textarea> */}
             <div className="label">
                 <span className="label-text">Edit pattern</span>
             </div>
-            <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
-            </textarea>
+            
+            <CodeEditor />
+            <label className="label cursor-pointer flex gap-4">
+                <span className="label-text">Is regex?</span>
+                <input type="checkbox" defaultChecked className="checkbox" />
+            </label>
 
             {props.children}
         </label>

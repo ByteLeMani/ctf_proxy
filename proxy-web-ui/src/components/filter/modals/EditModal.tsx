@@ -14,8 +14,8 @@ interface EditProps {
 export default function Edit({ filter, setNewFilter, handleEdit }: EditProps) {
 
     // setCurrentType(type);
-    return <dialog id="edit_modal" className="modal">
-        <div className="modal-box">
+    return <dialog id="edit_modal" className="modal" >
+        <div className="modal-box w-11/12 max-w-5xl">
             <h3 className="text-lg font-bold">Edit Filter</h3>
             <Form currentFilter={filter} setCurrentFilter={setNewFilter}>
                 <form method="dialog">

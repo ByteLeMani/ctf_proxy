@@ -6,6 +6,8 @@ COPY package.json .
 
 RUN npm install
 
+RUN npm install monaco-editor @monaco-editor/react
+
 COPY . .
 
 EXPOSE 5173
