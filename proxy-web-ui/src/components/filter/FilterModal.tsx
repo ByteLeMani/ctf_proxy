@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Form from "./FilterModalForm";
+import FormEdit from "./FilterEditForm";
 import { Filter } from "../../models/Filter";
 
 // interface EditProps {
@@ -18,11 +18,11 @@ function Edit({ filter, setNewFilter, handleEdit }: EditProps) {
   return <dialog id="edit_modal" className="modal">
     <div className="modal-box">
       <h3 className="text-lg font-bold">Edit Filter</h3>
-      <Form currentFilter={filter} setCurrentFilter={setNewFilter}>
+      <FormEdit currentFilter={filter} setCurrentFilter={setNewFilter}>
         <form method="dialog">
           <button className="btn" onClick={handleEdit}>Confirm</button>
         </form>
-      </Form>
+      </FormEdit>
     </div>
   </dialog>
 }
@@ -36,7 +36,7 @@ function Remove({filter, handleRemove}:RemoveProps) {
   
   return <dialog id="remove_modal" className="modal">
     <div className="modal-box">
-      <h3 className="font-bold text-lg">Remove Filter?</h3>
+      <h3 className="font-bold text-lg">Remove Filter</h3>
       <p className="py-4">Are you sure?</p>
       <form method="dialog">
         <button className="btn btn-error" onClick={handleRemove}>Confirm</button>
@@ -48,4 +48,26 @@ function Remove({filter, handleRemove}:RemoveProps) {
   </dialog>
 }
 
-export default { Edit, Remove }
+
+
+interface AddProps {
+  filter: Filter;
+  handleAdd: () => void;
+  setNewFilter: React.Dispatch<React.SetStateAction<Filter>>;
+}
+
+function Add({filter, handleAdd, setNewFilter}:AddProps) {
+  
+  return <dialog id="add_modal" className="modal">
+    <div className="modal-box">
+      <h3 className="text-lg font-bold">Edit Filter</h3>
+      <FormEdit currentFilter={filter} setCurrentFilter={setNewFilter}>
+        <form method="dialog">
+          <button className="btn" onClick={handleAdd}>Confirm</button>
+        </form>
+      </FormEdit>
+    </div>
+  </dialog>
+}
+
+export default { Edit, Remove, Add }

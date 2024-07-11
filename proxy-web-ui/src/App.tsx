@@ -4,9 +4,10 @@ import Divider from './components/Divider'
 import FilterList from './components/filter/FilterList'
 import SericeRow from './components/ServiceRow'
 import Icons from './icons/icons'
+import FilterModal from './components/filter/FilterModal'
 
 function App() {
-
+  
   return (
     <>
      <div className="main w-9/12 mx-auto relative h-svh">
@@ -21,10 +22,7 @@ function App() {
                  <SericeRow name='CCalendar' ports='4005:4000'/>
             </div>
             <Divider/>
-            <div className="flex justify-between">
-                <p className="text-4xl">Filters</p>
-                <ActionButton color='bg-blue-400' onClick={()=>{}}><Icons.Add/></ActionButton>
-            </div>
+            
             <FilterList/>
 
            <div className="flex absolute bottom-0 justify-center items-center w-full">
