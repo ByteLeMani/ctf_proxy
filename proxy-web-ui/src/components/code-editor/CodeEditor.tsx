@@ -6,16 +6,28 @@ import * as Monaco from 'monaco-editor';
 import { Filter } from "../../models/Filter";
 
 
+
+const codeTemplate = `# make some changes here or it will not be updated
+      def username(self, stream: HTTPStream):
+    message = stream.current_http_message
+    if 'register' in message.url and 'POST' in message.method:
+        username = message.parameters.get('username')
+        if len(username) > 10:
+            return True
+    else:
+        return False`
+
 interface EditorProps {
   currentFilter: Filter;
   setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }
 
+
 export default function CodeEditor({currentFilter, setCurrentFilter}:EditorProps) {
 
   const monaco = useMonaco();
 
-  useEffect(() => {
+  /*useEffect(() => {
     // do conditional chaining
     monaco?.languages.typescript.javascriptDefaults.setEagerModelSync(true);
     // or make sure that it exists by other ways
@@ -23,7 +35,7 @@ export default function CodeEditor({currentFilter, setCurrentFilter}:EditorProps
       console.log('here is the monaco instance:', monaco);
       
     }
-  }, [monaco]);
+  }, [monaco]);*/
 
   // https://microsoft.github.io/monaco-editor/typedoc/interfaces/editor.IStandaloneEditorConstructionOptions.html
   const editorOptions = Monaco.editor.IStandaloneEditorConstructionOptions = {
@@ -43,15 +55,7 @@ export default function CodeEditor({currentFilter, setCurrentFilter}:EditorProps
       width="100vh"
       height="30vh"
       defaultLanguage="python"
-      defaultValue="# make some changes here or it will not be updated
-      def username(self, stream: HTTPStream):
-    message = stream.current_http_message
-    if 'register' in message.url and 'POST' in message.method:
-        username = message.parameters.get('username')
-        if len(username) > 10:
-            return True
-    else:
-        return False"
+      defaultValue= {currentFilter.pattern}
         onChange={(value)=>{setCurrentFilter({...currentFilter, pattern: value ? value : ""})}}
     />
   );

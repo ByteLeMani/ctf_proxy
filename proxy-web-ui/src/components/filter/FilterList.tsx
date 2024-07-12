@@ -5,30 +5,34 @@ import ActionButton from "../ActionButton";
 import icons from "../../icons/icons";
 import Add from "./modals/AddModal";
 
-
+const templateItem:Filter = { id: 0, port: 3000, type: 'PostBody', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true };
 
 export default function FilterList() {
     const [items, setItems] = useState<Filter[]>([
-        { id: 0, port: 3000, type: 'PostBody', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true },
+        templateItem,
         { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false },
         { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true },
     ]);
 
     const [currentItem, setCurrentItem] = useState<Filter>(items[0]);
-    const [newItem, setNewItem] = useState<Filter>(items[0]);
+    const [newItem, setNewItem] = useState<Filter>(templateItem);
     const [removeId, setRemoveId] = useState<number>(0);
 
 
     const handleEdit = function () {
+        console.log("EDIT: " + JSON.stringify(newItem, null, 2));
         setItems((prevItems) =>
             prevItems.map((item) =>
                 item.id === currentItem.id ? newItem : item
             )
         );
+        setNewItem(templateItem);
     }
 
     const handleAdd = function () {
-        setItems([{...newItem, id: items[items.length-1].id+1}, ...items]);
+        console.log("Total: "+ items.length + ", ADD: " + JSON.stringify(newItem, null, 2));
+        setItems([...items, {...newItem, id: items[items.length-1].id+1}]);
+        setNewItem(templateItem);
     }
 
     const handleRemove = function () {
@@ -49,8 +53,8 @@ export default function FilterList() {
     }
 
     const openAddModal = function (item: Filter) {
-        setCurrentItem(item);
-        setNewItem(item);
+        // setCurrentItem(item);
+        setNewItem(templateItem);
         // alert(JSON.stringify(item));
         document!!.getElementById('add_modal')!!.showModal();
     }
@@ -76,7 +80,7 @@ export default function FilterList() {
                 </thead>
                 <tbody className="text-center">
                     {items.map((item: Filter) => {
-                        return <FilterRow key={item.port} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} handleRemove={handleRemove} newFilter={newItem} setNewFilter={setNewItem} />
+                        return <FilterRow key={item.id} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} handleRemove={handleRemove} newFilter={newItem} setNewFilter={setNewItem} />
                     })}
                 </tbody>
             </table>

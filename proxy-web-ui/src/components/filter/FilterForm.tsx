@@ -25,8 +25,8 @@ interface FormProps {
     children: React.ReactNode;
 }
 export default function Form(props: FormProps) {
-    const [isCustom, setIsCustom] = useState<Boolean>(props.currentFilter.pattern.includes("Custom"));
-
+    // const [isCustom, setIsCustom] = useState<Boolean>(props.currentFilter.type.includes("Custom"));
+    
     return <div className="w-full flex flex-col items-center">
         <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -47,7 +47,6 @@ export default function Form(props: FormProps) {
             <select className="select select-bordered"
                 value={props.currentFilter.type}
                 onChange={(e) => {
-                    setIsCustom(e.target.value.includes("Custom"))
                     props.setCurrentFilter({ ...props.currentFilter, type: e.target.value })
 
                 }}>
@@ -62,7 +61,7 @@ export default function Form(props: FormProps) {
                 <span className="label-text">Edit pattern</span>
             </div>
 
-            {isCustom ?
+            {props.currentFilter.type.includes("Custom") ?
                 <CodeEditor currentFilter={props.currentFilter} setCurrentFilter={props.setCurrentFilter}/> :
                 <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
                 </textarea>
