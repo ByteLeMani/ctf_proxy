@@ -6,7 +6,8 @@ To setup everything run run `docker compose up -d` and open `localhost:5173`
 - [x] Filters editor
     - [x] Change type
     - [x] Change pattern
-    - [ ] Custom pattern with code editor
+    - [x] Custom pattern with code editor
+        - [ ] Adding Intellisense support and proxy libraries
     - [ ] Additional options (specific header, param length etc.)
     - [x] Change port
     - [x] HTTP Support
