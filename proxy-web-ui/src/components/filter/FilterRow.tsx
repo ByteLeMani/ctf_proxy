@@ -8,7 +8,7 @@ interface FilterRowProps{
     filter: Filter;
     newFilter: Filter;
     setNewFilter: React.Dispatch<React.SetStateAction<Filter>>;
-    handleEdit: ()=>void;
+    handleEdit: (i?:Filter)=>void;
     handleRemove: ()=>void;
     openEditModal: (filter: Filter)=>void;
     openRemoveModal: (filter: Filter)=>void;
@@ -24,9 +24,8 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
             <td className="border py-4"><p className="font-bold">{filter.type}</p></td>
             <td className="border"><code className="text-red-500 hover:text-red-700">{reducedPattern}</code></td>
             <td className="border">
-            <input type="checkbox" defaultChecked={filter.isActive} className="checkbox" onChange={()=>{
-                setNewFilter({...newFilter, isActive:!newFilter.isActive});
-                handleEdit();
+            <input type="checkbox" defaultChecked={filter.isActive} className="checkbox" onChange={(e)=>{
+                handleEdit({...filter, isActive:e.target.checked});
             }}/></td>
             
             <td className="border">

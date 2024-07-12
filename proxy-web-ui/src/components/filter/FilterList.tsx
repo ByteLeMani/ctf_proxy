@@ -19,14 +19,24 @@ export default function FilterList() {
     const [removeId, setRemoveId] = useState<number>(0);
 
 
-    const handleEdit = function () {
-        console.log("EDIT: " + JSON.stringify(newItem, null, 2));
-        setItems((prevItems) =>
-            prevItems.map((item) =>
-                item.id === currentItem.id ? newItem : item
-            )
-        );
-        setNewItem(templateItem);
+    const handleEdit = function (i?:Filter) {
+        if (typeof i !== 'undefined'){ // handle isActive editing
+            console.log("EDIT: " + JSON.stringify(i, null, 2));
+            setItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === i.id ? i : item
+                )
+            );
+        }else{
+            console.log("EDIT: " + JSON.stringify(newItem, null, 2));
+            setItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === currentItem.id ? newItem : item
+                )
+            );
+            setNewItem(templateItem);
+        }
+        
     }
 
     const handleAdd = function () {
