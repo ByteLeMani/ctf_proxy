@@ -6,7 +6,7 @@ To setup everything run run `docker compose up -d` and open `localhost:5173`
 - [x] Filters editor
     - [x] Change type
     - [x] Change pattern
-    - [x] Custom pattern with code editor
+    - [x] Custom pattern with code editor (:warning: still WIP)
         - [ ] Adding Intellisense support and proxy libraries
     - [ ] Additional options (specific header, param length etc.)
     - [x] Change port
@@ -14,6 +14,7 @@ To setup everything run run `docker compose up -d` and open `localhost:5173`
     - [ ] TCP Support   
 
 - [ ] Services editor
+
 
 
 ## Screenshot
