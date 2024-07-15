@@ -8,5 +8,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true
+  },
+
+  optimizeDeps: {
+    esbuildOptions: {
+      plugins: [
+        importMetaUrlPlugin
+      ]
+    }
   }
 })
