@@ -53,27 +53,28 @@ export default function FilterList() {
         setCurrentItem(item);
         setNewItem(item);
         // alert(JSON.stringify(item));
-        document!!.getElementById('edit_modal')!!.showModal();
+        ((document!!.getElementById('edit_modal')!!) as any).showModal();
     }
 
     const openRemoveModal = function (item: Filter) {
         setCurrentItem(item);
-        setRemoveId(item.id)
-        document!!.getElementById('remove_modal')!!.showModal();
+        setRemoveId(item.id);
+        ((document!!.getElementById('remove_modal')!!) as any).showModal();
     }
 
-    const openAddModal = function (item: Filter) {
+    const openAddModal = function () {
+
         // setCurrentItem(item);
         setNewItem(templateItem);
         // alert(JSON.stringify(item));
-        document!!.getElementById('add_modal')!!.showModal();
+        ((document!!.getElementById('add_modal')!!) as any).showModal();
     }
 
 
     return <>
         <div className="flex justify-between">
             <p className="text-4xl">Filters</p>
-            <ActionButton color='bg-blue-400' onClick={() => {openAddModal(newItem)}}><icons.Add /></ActionButton>
+            <ActionButton color='bg-blue-400' onClick={() => {openAddModal()}}><icons.Add /></ActionButton>
         </div>
         <Add filter={newItem} setNewFilter={setNewItem} handleAdd={handleAdd}/>
         <div className="list-filters content-center mt-3">

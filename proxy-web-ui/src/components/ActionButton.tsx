@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+
 
 interface ActionButtonProps {
     children: React.ReactNode;
     color: string;
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 function ActionButton({ children, color, onClick=()=>{} }: ActionButtonProps) {

@@ -1,6 +1,16 @@
-import { useState } from "react";
 import { Filter } from "../../models/Filter";
 import CodeEditor from "../code-editor/CodeEditor";
+
+function renderSwitch(props:FormProps, param:string){
+    switch(param){
+        case "Custom":
+            return <CodeEditor/>
+        default:
+            return <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
+                </textarea>
+    }
+}
+
 var filter_types = [
     "PostBody",
     "Cookie",
@@ -61,18 +71,18 @@ export default function Form(props: FormProps) {
                 <span className="label-text">Edit pattern</span>
             </div>
 
-            {props.currentFilter.type.includes("Custom") ?
-                <CodeEditor currentFilter={props.currentFilter} setCurrentFilter={props.setCurrentFilter}/> :
-                <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
-                </textarea>
-            }
+            {renderSwitch(props, props.currentFilter.type)}
+
+            
             <label className="label cursor-pointer flex gap-4">
                 <span className="label-text">Is regex?</span>
                 <input type="checkbox" defaultChecked className="checkbox" />
             </label>
 
-            {props.children}
         </label>
+
+
+        {props.children}
     </div>
 }
 

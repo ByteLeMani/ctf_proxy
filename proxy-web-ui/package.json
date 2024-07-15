@@ -7,22 +7,38 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lsp": "vite-node language-server/direct.ts"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.6.0",
-    "monaco-editor": "^0.50.0",
+    "@codingame/esbuild-import-meta-url-plugin": "^1.0.2",
+    "@codingame/monaco-vscode-files-service-override": "~6.0.3",
+    "@codingame/monaco-vscode-python-default-extension": "~6.0.3",
+    "@typefox/monaco-editor-react": "^4.3.2",
+    "@types/vscode": "^1.90.0",
+    "express": "^4.19.2",
+    "jszip": "^3.10.1",
+    "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~6.0.3",
+    "monaco-editor-wrapper": "~5.3.1",
+    "monaco-languageclient": "~8.6.0",
+    "net": "^1.0.2",
+    "pyright": "^1.1.371",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "vite-node": "^2.0.2",
+    "vscode": "npm:@codingame/monaco-vscode-api@~6.0.3",
+    "vscode-languageclient": "~9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",
-    "@monaco-editor/react": "^4.6.0",
-    "monaco-editor": "^0.50.0",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.10",
     "eslint": "^8.57.0",
@@ -30,7 +46,11 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",
-    "typescript": "^5.2.2",
+    "typescript": "^5.5.3",
     "vite": "^5.3.1"
+  },
+  "overrides": {
+    "monaco-editor": "$monaco-editor",
+    "vscode": "$vscode"
   }
 }

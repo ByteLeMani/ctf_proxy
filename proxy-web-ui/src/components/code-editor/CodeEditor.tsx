@@ -1,62 +1,53 @@
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) 2024 TypeFox and others.
+ * Licensed under the MIT License. See LICENSE in the package root for license information.
+ * ------------------------------------------------------------------------------------------ */
 
+import * as vscode from 'vscode';
+import { RegisteredFileSystemProvider, registerFileSystemOverlay, RegisteredMemoryFile } from '@codingame/monaco-vscode-files-service-override';
+import React, { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import type { TextChanges } from '@typefox/monaco-editor-react';
+import { MonacoEditorReactComp } from '@typefox/monaco-editor-react';
+import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
+import { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper';
+import { createUserConfig } from './config.js';
+import codePyCode from './code.py?raw';
 
-import { Editor, useMonaco } from "@monaco-editor/react";
-import { useEffect } from "react";
-import * as Monaco from 'monaco-editor';
-import { Filter } from "../../models/Filter";
-
-
-
-const codeTemplate = `# make some changes here or it will not be updated
-      def username(self, stream: HTTPStream):
-    message = stream.current_http_message
-    if 'register' in message.url and 'POST' in message.method:
-        username = message.parameters.get('username')
-        if len(username) > 10:
-            return True
-    else:
-        return False`
-
-interface EditorProps {
-  currentFilter: Filter;
-  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
-}
-
-
-export default function CodeEditor({currentFilter, setCurrentFilter}:EditorProps) {
-
-  const monaco = useMonaco();
-
-  /*useEffect(() => {
-    // do conditional chaining
-    monaco?.languages.typescript.javascriptDefaults.setEagerModelSync(true);
-    // or make sure that it exists by other ways
-    if (monaco) {
-      console.log('here is the monaco instance:', monaco);
-      
-    }
-  }, [monaco]);*/
-
-  // https://microsoft.github.io/monaco-editor/typedoc/interfaces/editor.IStandaloneEditorConstructionOptions.html
-  const editorOptions = Monaco.editor.IStandaloneEditorConstructionOptions = {
-    // Configuration options go here
-    language: 'python', // Example: Set the language mode to JavaScript
-    automaticLayout: true, // Example: Enable automatic layout
-    fontSize: 16, // Example: Set font size to 16px
-    readOnly: false,
-    minimap: { enabled: false }
+export const configureMonacoWorkers = () => {
+    useWorkerFactory({
+        ignoreMapping: true,
+        workerLoaders: {
+            editorWorkerService: () => new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), { type: 'module' }),
+        }
+    });
 };
 
+export default function CodeEditor(){
+    configureMonacoWorkers();
+    const codePyUri = vscode.Uri.file('/workspace/code.py');
+    const fileSystemProvider = new RegisteredFileSystemProvider(false);
+    fileSystemProvider.registerFile(new RegisteredMemoryFile(codePyUri, codePyCode));
+    registerFileSystemOverlay(1, fileSystemProvider);
+
+    const onTextChanged = (textChanges: TextChanges) => {
+        console.log(`Dirty? ${textChanges.isDirty}\ntext: ${textChanges.main}\ntextOriginal: ${textChanges.original}`);
+    };
 
 
-  return (
-    <Editor
-    options={editorOptions}
-      width="100vh"
-      height="30vh"
-      defaultLanguage="python"
-      defaultValue= {currentFilter.pattern}
-        onChange={(value)=>{setCurrentFilter({...currentFilter, pattern: value ? value : ""})}}
-    />
-  );
-}
+    return <MonacoEditorReactComp
+        userConfig={createUserConfig('/workspace', codePyCode, '/workspace/bad.py')}
+        style={{
+            'paddingTop': '5px',
+            'height': '80vh',
+            'width': '100vh'
+        }}
+        onTextChanged={onTextChanged}
+        onLoad={(wrapper: MonacoEditorLanguageClientWrapper) => {
+            console.log(`Loaded ${wrapper.reportStatus().join('\n').toString()}`);
+        }}
+        onError={(e) => {
+            console.error(e);
+        }}
+    />;
+};
