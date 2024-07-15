@@ -1,12 +1,33 @@
-version: '3.8'
-
 services:
-  nodejs-server:
+  vite-server:
     build: .
+    command: npm run dev
+    volumes:
+      - /app/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
     ports:
       - 5173:5173
+  language-server:
+    build: .
+    command: npm run lsp
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      NODE_ENV: development
+      - /app/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./language-server
+          target: /app/lsp
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - 30001:30001

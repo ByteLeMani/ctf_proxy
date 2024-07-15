@@ -1,15 +1,15 @@
-FROM node:18-alpine
+FROM node:18
 
-WORKDIR /usr/src/app
+# RUN useradd -ms /bin/sh -u 1001 app
+# USER app
 
-COPY package.json .
+# Install dependencies
+WORKDIR /app
+COPY package.json ./
 
-RUN npm install
+RUN npm install -g npm
+RUN npm install -g pnpm
+RUN pnpm install
 
-RUN npm install monaco-editor @monaco-editor/react
 
-COPY . .
-
-EXPOSE 5173
-
-CMD [ "npm", "run", "dev" , "--host"]
+COPY --chown=app:app . /app
