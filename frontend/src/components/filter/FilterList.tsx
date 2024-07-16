@@ -4,6 +4,8 @@ import FilterRow from "./FilterRow";
 import ActionButton from "../ActionButton";
 import icons from "../../icons/icons";
 import Add from "./modals/AddModal";
+import Edit from "./modals/EditModal";
+import Remove from "./modals/RemoveModal";
 
 const templateItem:Filter = { id: 0, port: 3000, type: 'PostBody', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true };
 
@@ -77,6 +79,8 @@ export default function FilterList() {
             <ActionButton color='bg-blue-400' onClick={() => {openAddModal()}}><icons.Add /></ActionButton>
         </div>
         <Add filter={newItem} setNewFilter={setNewItem} handleAdd={handleAdd}/>
+        <Edit filter={newItem} setNewFilter={setNewItem} handleEdit={handleEdit}/>
+        <Remove handleRemove={handleRemove}/>
         <div className="list-filters content-center mt-3">
             <table className="table-auto w-full border">
                 <thead>
@@ -91,7 +95,7 @@ export default function FilterList() {
                 </thead>
                 <tbody className="text-center">
                     {items.map((item: Filter) => {
-                        return <FilterRow key={item.id} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} handleRemove={handleRemove} newFilter={newItem} setNewFilter={setNewItem} />
+                        return <FilterRow key={item.id} filter={item} openEditModal={openEditModal} openRemoveModal={openRemoveModal} handleEdit={handleEdit} />
                     })}
                 </tbody>
             </table>

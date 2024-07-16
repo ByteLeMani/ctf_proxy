@@ -6,17 +6,17 @@ import { Filter } from "../../models/Filter";
 
 interface FilterRowProps{
     filter: Filter;
-    newFilter: Filter;
-    setNewFilter: React.Dispatch<React.SetStateAction<Filter>>;
+    newFilter?: Filter;
+    setNewFilter?: React.Dispatch<React.SetStateAction<Filter>>;
     handleEdit: (i?:Filter)=>void;
-    handleRemove: ()=>void;
+    handleRemove?: ()=>void;
     openEditModal: (filter: Filter)=>void;
     openRemoveModal: (filter: Filter)=>void;
 }
 
 
 
-function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, openEditModal, openRemoveModal}:FilterRowProps) {
+function FilterRow({filter, handleEdit, openEditModal, openRemoveModal}:FilterRowProps) {
     const reducedPattern = filter.pattern.length > 30 ? filter.pattern.substring(0, 30) + "...": filter.pattern;
     return <>
         <tr>
@@ -34,7 +34,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
                     onClick={()=>{openEditModal(filter)}}>
                     <icons.Edit/>
                 </ActionButton>
-                <Edit filter={newFilter} setNewFilter={setNewFilter} handleEdit={handleEdit}/>
+                
             </td>
             
             <td className="border">
@@ -43,7 +43,7 @@ function FilterRow({filter, newFilter, setNewFilter, handleEdit, handleRemove, o
                     onClick={()=>{openRemoveModal(filter)}}>
                     <icons.Remove/>
                 </ActionButton>
-                <Remove handleRemove={handleRemove}/>
+                
             </td>
         </tr>
     </>
