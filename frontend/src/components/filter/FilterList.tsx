@@ -10,8 +10,8 @@ const templateItem:Filter = { id: 0, port: 3000, type: 'PostBody', pattern: '/"u
 export default function FilterList() {
     const [items, setItems] = useState<Filter[]>([
         templateItem,
-        { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false },
-        { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true },
+        // { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false },
+        // { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true },
     ]);
 
     const [currentItem, setCurrentItem] = useState<Filter>(items[0]);

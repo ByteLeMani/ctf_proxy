@@ -1,15 +1,18 @@
+import { useCallback, useState } from "react";
 import { Filter } from "../../models/Filter";
-import CodeEditor from "../code-editor/CodeEditor";
+import CodeEditor, { configureMonacoWorkers } from "../code-editor/CodeEditor";
+import { createUserConfig } from "../code-editor/config";
+import { editor } from "monaco-editor";
 
-function renderSwitch(props:FormProps, param:string){
-    switch(param){
-        case "Custom":
-            return <CodeEditor/>
-        default:
-            return <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
-                </textarea>
-    }
-}
+// function renderSwitch(props:FormProps, param:string){
+//     switch(param){
+//         case "Custom":
+//             return <CodeEditor/>
+//         default:
+//             return <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
+//                 </textarea>
+//     }
+// }
 
 var filter_types = [
     "PostBody",
@@ -32,11 +35,16 @@ const listPorts = service_ports.map(port => <option value={port} key={port}>{por
 interface FormProps {
     currentFilter: Filter;
     setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
-    children: React.ReactNode;
+    // children: React.ReactNode;
+    handleEdit: (i?:Filter)=>void;
 }
+
+
+
 export default function Form(props: FormProps) {
-    // const [isCustom, setIsCustom] = useState<Boolean>(props.currentFilter.type.includes("Custom"));
+    const [_editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
     
+
     return <div className="w-full flex flex-col items-center">
         <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -71,7 +79,18 @@ export default function Form(props: FormProps) {
                 <span className="label-text">Edit pattern</span>
             </div>
 
-            {renderSwitch(props, props.currentFilter.type)}
+            {/* {renderSwitch(props, props.currentFilter.type)} */}
+
+            {
+            props.currentFilter.type.includes("Custom") ? 
+                
+                <CodeEditor
+                    pattern={props.currentFilter.pattern}
+                    setEditor={setEditor}/> 
+                    :
+                <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
+                </textarea>
+            }
 
             
             <label className="label cursor-pointer flex gap-4">
@@ -82,7 +101,13 @@ export default function Form(props: FormProps) {
         </label>
 
 
-        {props.children}
+        <form method="dialog">
+            <button className="btn" onClick={()=>{
+                props.setCurrentFilter({...(props.currentFilter), pattern: (_editor !== undefined ? _editor.getValue() : '')});
+                console.log("New pattern: " + _editor?.getValue());
+                props.handleEdit({...(props.currentFilter), pattern: (_editor !== undefined ? _editor.getValue() : '')});
+            }}>Confirm</button>
+        </form>
     </div>
 }
 

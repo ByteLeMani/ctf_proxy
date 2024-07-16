@@ -7,46 +7,49 @@ import * as vscode from 'vscode';
 // import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override';
 // import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override';
 import '@codingame/monaco-vscode-python-default-extension';
-import { UserConfig } from 'monaco-editor-wrapper';
+import { LanguageClientConfig, UserConfig } from 'monaco-editor-wrapper';
 // import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services';
 import { MonacoLanguageClient } from 'monaco-languageclient';
 
 export const createUserConfig = (workspaceRoot: string, code: string, codeUri: string): UserConfig => {
-    return {
-        languageClientConfig: {
-            languageId: 'python',
-            name: 'Python Language Server Example',
-            options: {
-                $type: 'WebSocket',
-                host: 'localhost',
-                port: 30001,
-                path: 'pyright',
-                extraParams: {
-                    authorization: 'UserAuth'
-                },
-                secured: false,
-                startOptions: {
-                    onCall: (languageClient?: MonacoLanguageClient) => {
-                        setTimeout(() => {
-                            ['pyright.restartserver', 'pyright.organizeimports'].forEach((cmdName) => {
-                                vscode.commands.registerCommand(cmdName, (...args: unknown[]) => {
-                                    languageClient?.sendRequest('workspace/executeCommand', { command: cmdName, arguments: args });
-                                });
-                            });
-                        }, 250);
-                    },
-                    reportStatus: true,
-                }
+
+    const languageClientConfig: LanguageClientConfig = {
+        languageId: 'python',
+        name: 'Python Language Server Example',
+        options: {
+            $type: 'WebSocket',
+            host: 'localhost',
+            port: 30001,
+            path: 'pyright',
+            extraParams: {
+                authorization: 'UserAuth'
             },
-            clientOptions: {
-                documentSelector: ['python'],
-                workspaceFolder: {
-                    index: 0,
-                    name: 'workspace',
-                    uri: vscode.Uri.parse(workspaceRoot)
+            secured: false,
+            startOptions: {
+                onCall: (languageClient?: MonacoLanguageClient) => {
+                    setTimeout(() => {
+                        ['pyright.restartserver', 'pyright.organizeimports'].forEach((cmdName) => {
+                            vscode.commands.registerCommand(cmdName, (...args: unknown[]) => {
+                                languageClient?.sendRequest('workspace/executeCommand', { command: cmdName, arguments: args });
+                            });
+                        });
+                    }, 250);
                 },
+                reportStatus: true,
+            }
+        },
+        clientOptions: {
+            documentSelector: ['python'],
+            workspaceFolder: {
+                index: 0,
+                name: 'workspace',
+                uri: vscode.Uri.parse('/workspace')
             },
         },
+    };
+
+    return {
+        languageClientConfig,
         wrapperConfig: {
             serviceConfig: {
                 userServices: {
