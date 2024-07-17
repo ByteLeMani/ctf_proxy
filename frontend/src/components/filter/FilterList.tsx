@@ -91,7 +91,6 @@ export default function FilterList() {
 
 
     return <>
-        {/* <Pippo filter={newItem} callback={handleEdit}><p>test</p></Pippo> */}
         <div className="flex justify-between">
             <p className="text-4xl">Filters</p>
             <ActionButton color='bg-blue-400' onClick={openAddModal}><icons.Add /></ActionButton>

@@ -12,4 +12,4 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 
-COPY --chown=app:app . /app
+COPY . /app
