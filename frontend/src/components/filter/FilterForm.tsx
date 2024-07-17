@@ -1,18 +1,7 @@
-import { useCallback, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Filter } from "../../models/Filter";
-import CodeEditor, { configureMonacoWorkers } from "../code-editor/CodeEditor";
-import { createUserConfig } from "../code-editor/config";
 import { editor } from "monaco-editor";
-
-// function renderSwitch(props:FormProps, param:string){
-//     switch(param){
-//         case "Custom":
-//             return <CodeEditor/>
-//         default:
-//             return <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
-//                 </textarea>
-//     }
-// }
+import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
 
 var filter_types = [
     "PostBody",
@@ -33,81 +22,105 @@ const listPorts = service_ports.map(port => <option value={port} key={port}>{por
 
 
 interface FormProps {
-    currentFilter: Filter;
-    setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
-    // children: React.ReactNode;
-    handleEdit: (i?:Filter)=>void;
+    filter: Filter | null;
+    onSubmit: (filter:Filter) => void;
+    editor?:React.Ref<MonacoEditorReactComp>;
+}
+
+// TODO: remove this after code editor fix
+export interface CodeEditorState{
+    target: {
+        name: string;
+        value: string;
+    }
 }
 
 
-
-export default function Form(props: FormProps) {
+export default function Form({ filter, onSubmit }: FormProps) {
     const [_editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
+    const [formState, setFormState] = useState<Filter | null>(filter);
     
 
+    useEffect(()=>{
+        setFormState(filter);
+    }, [filter]);
+
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (formState) {
+          onSubmit(formState);
+        }
+    };
+
+    const handleChange = (e:  ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement> | CodeEditorState) => {
+        const { name, value } = e.target;
+        // if you see errors in your editor is just typescript intellisense not understanding stuff
+        if (formState !== null) {
+          setFormState((prevState) => ({
+            ...prevState,
+            [name]: value,
+          }));
+        }
+      };
+
+
     return <div className="w-full flex flex-col items-center">
-        <label className="form-control w-full max-w-xs">
-            <div className="label">
-                <span className="label-text">Pick the service</span>
-            </div>
-            <select className="select select-bordered"
-                value={props.currentFilter.port}
-                onChange={(e) => {
-                    props.setCurrentFilter({ ...props.currentFilter, port: parseInt(e.target.value) })
-
-                }}>
-                <option disabled >Choose one</option>
-                {listPorts}
-            </select>
-            <div className="label">
-                <span className="label-text">Choose filter type</span>
-            </div>
-            <select className="select select-bordered"
-                value={props.currentFilter.type}
-                onChange={(e) => {
-                    props.setCurrentFilter({ ...props.currentFilter, type: e.target.value })
-
-                }}>
-                <option disabled >Choose one</option>
-                {listTypes}
-            </select>
-        </label>
-
-        <label className="form-control w-full flex flex-col items-center">
-
-            <div className="label">
-                <span className="label-text">Edit pattern</span>
-            </div>
-
-            {/* {renderSwitch(props, props.currentFilter.type)} */}
-
-            {
-            props.currentFilter.type.includes("Custom") ? 
-                
-                <CodeEditor
-                    pattern={props.currentFilter.pattern}
-                    setEditor={setEditor}/> 
-                    :
-                <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..." value={props.currentFilter.pattern} onChange={(e) => { props.setCurrentFilter({ ...props.currentFilter, pattern: e.target.value }) }}>
-                </textarea>
-            }
-
-            
-            <label className="label cursor-pointer flex gap-4">
-                <span className="label-text">Is regex?</span>
-                <input type="checkbox" defaultChecked className="checkbox" />
+        <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
+            <label className="form-control w-full max-w-xs">
+                <div className="label">
+                    <span className="label-text">Pick the service</span>
+                </div>
+                <select className="select select-bordered"
+                    value={formState?.port}
+                    name='port'
+                    onChange={handleChange}>
+                    <option disabled >Choose one</option>
+                    {listPorts}
+                </select>
+                <div className="label">
+                    <span className="label-text">Choose filter type</span>
+                </div>
+                <select className="select select-bordered"
+                    value={formState?.type}
+                    name='type'
+                    onChange={handleChange}>
+                    <option disabled >Choose one</option>
+                    {listTypes}
+                </select>
             </label>
 
-        </label>
+            <label className="form-control w-full flex flex-col items-center">
+
+                <div className="label">
+                    <span className="label-text">Edit pattern</span>
+                </div>
+
+                {
+                    formState?.type.includes("Custom") ?
+
+                        <CodeEditor
+                            pattern={formState?.pattern}
+                            setEditor={setEditor} />
+                        :
+                        <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..."
+                            value={formState?.pattern}
+                            name='pattern'
+                            onChange={handleChange} >
+                        </textarea>
+                }
 
 
-        <form method="dialog">
-            <button className="btn" onClick={()=>{
-                props.setCurrentFilter({...(props.currentFilter), pattern: (_editor !== undefined ? _editor.getValue() : '')});
-                console.log("New pattern: " + _editor?.getValue());
-                props.handleEdit({...(props.currentFilter), pattern: (_editor !== undefined ? _editor.getValue() : '')});
-            }}>Confirm</button>
+                <label className="label cursor-pointer flex gap-4">
+                    <span className="label-text">Is regex?</span>
+                    <input type="checkbox" defaultChecked className="checkbox" />
+                </label>
+
+            </label>
+            <button className="btn btn-primary" type="submit">Confirm</button>
         </form>
+
+
     </div>
 }
 

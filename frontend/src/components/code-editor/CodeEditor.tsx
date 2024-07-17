@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { RegisteredFileSystemProvider, registerFileSystemOverlay, RegisteredMemoryFile } from '@codingame/monaco-vscode-files-service-override';
-import React, { StrictMode, useCallback, useState } from 'react';
+import React, { StrictMode, useCallback, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import type { TextChanges } from '@typefox/monaco-editor-react';
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react';
@@ -31,11 +31,12 @@ interface EditorProps {
     setEditor: React.Dispatch<React.SetStateAction<editor.IStandaloneCodeEditor | undefined>>;
 }
 
-export default function CodeEditor({pattern, setEditor}:EditorProps){
+function CodeEditor({pattern, setEditor}:EditorProps){
     const codePyUri = vscode.Uri.file('/workspace/code.py');
     const fileSystemProvider = new RegisteredFileSystemProvider(false);
     fileSystemProvider.registerFile(new RegisteredMemoryFile(codePyUri, codePyCode));
     registerFileSystemOverlay(1, fileSystemProvider);
+    // const codeEditorRef = useRef<MonacoEditorReactComp>(null);
     
     const codePy = {
         code: pattern, // `def test():            pass`,
@@ -44,7 +45,7 @@ export default function CodeEditor({pattern, setEditor}:EditorProps){
 
     const onTextChanged = (textChanges: TextChanges) => {
         // setNewFilter({...filter, pattern: textChanges.main});
-        console.log(`Dirty? ${textChanges.isDirty}\ntext: ${textChanges.main}\ntextOriginal: ${textChanges.original}`);
+        // console.log(`Dirty? ${textChanges.isDirty}\ntext: ${textChanges.main}\ntextOriginal: ${textChanges.original}`);
     };
 
 
@@ -57,12 +58,16 @@ export default function CodeEditor({pattern, setEditor}:EditorProps){
         }}
         onTextChanged={onTextChanged}
         onLoad={(wrapper: MonacoEditorLanguageClientWrapper) => {
+            // console.log(`Loaded ${wrapper.reportStatus().join('\n').toString()}`);
             setEditor(wrapper.getEditor());
                 
-            // console.log(`Loaded ${wrapper.reportStatus().join('\n').toString()}`);
+            
         }}
-        // onError={(e) => {
-        //     console.error(e);
-        // }}
+        onError={(e) => {
+            console.error('error:' + e);
+        }}
+        
     />;
-};
+}
+
+export default CodeEditor;

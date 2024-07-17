@@ -1,14 +1,10 @@
 import ActionButton from "../ActionButton"
 import icons from "../../icons/icons"
-import Edit from "./modals/EditModal";
-import Remove from "./modals/RemoveModal";
 import { Filter } from "../../models/Filter";
 
 interface FilterRowProps{
     filter: Filter;
-    newFilter?: Filter;
-    setNewFilter?: React.Dispatch<React.SetStateAction<Filter>>;
-    handleEdit: (i?:Filter)=>void;
+    handleEdit: (i:Filter)=>void;
     handleRemove?: ()=>void;
     openEditModal: (filter: Filter)=>void;
     openRemoveModal: (filter: Filter)=>void;
