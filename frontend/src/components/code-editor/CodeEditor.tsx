@@ -5,16 +5,13 @@
 
 import * as vscode from 'vscode';
 import { RegisteredFileSystemProvider, registerFileSystemOverlay, RegisteredMemoryFile } from '@codingame/monaco-vscode-files-service-override';
-import React, { StrictMode, useCallback, useRef, useState } from 'react';
-import ReactDOM from 'react-dom/client';
+import React from 'react';
 import type { TextChanges } from '@typefox/monaco-editor-react';
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper';
 import { createUserConfig } from './config.js';
 import codePyCode from './code.py?raw';
-import { Filter } from '../../models/Filter.js';
-import { UserConfig } from 'monaco-editor-wrapper';
 import {editor} from 'monaco-editor'
 
 export const configureMonacoWorkers = () => {

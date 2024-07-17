@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Filter } from "../../models/Filter";
 import { editor } from "monaco-editor";
 import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
+import CodeEditor from "../code-editor/CodeEditor";
 
 var filter_types = [
     "PostBody",
@@ -110,11 +111,6 @@ export default function Form({ filter, onSubmit }: FormProps) {
                         </textarea>
                 }
 
-
-                <label className="label cursor-pointer flex gap-4">
-                    <span className="label-text">Is regex?</span>
-                    <input type="checkbox" defaultChecked className="checkbox" />
-                </label>
 
             </label>
             <button className="btn btn-primary" type="submit">Confirm</button>

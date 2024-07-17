@@ -104,7 +104,7 @@ export default function FilterList() {
         
         <Modal
          ref={addModal}
-         filter={templateItem}
+         filter={selectedItem}
          onClose={closeAddModal}
          onSubmit={handleAdd}  />
         
