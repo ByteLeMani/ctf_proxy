@@ -25,12 +25,12 @@ function FilterRow({ filter, handleEdit, openEditModal, openRemoveModal }: Filte
             <td className="border">
 
                 <div className="relative">
-                    <code className="text-red-500 hover:text-red-700">
+                    <code className={filter.direction?.includes("in") ? 'text-red-500 hover:text-red-700':'text-blue-500 hover:text-blue-700'}>
                         {reducedPattern}
                     </code>
                     <div className="absolute start-1 top-0">
                     {filter.direction?.includes("in") ?
-                        <icons.InArrow /> : <icons.OutArrow />}
+                        <icons.InArrow color='text-red-500' /> : <icons.OutArrow color='text-blue-500' />}
                     </div>
                 </div>
             </td>
