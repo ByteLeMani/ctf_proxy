@@ -17,7 +17,7 @@ function FilterRow({ filter, handleEdit, openEditModal, openRemoveModal }: Filte
     return <>
         <tr>
             <td className="border">
-                <span className="rounded-lg p-2 bg-lime-400">
+                <span className="rounded-lg p-2 bg-lime-500  dark:bg-lime-700">
                     {filter.port}
                 </span>
             </td>
@@ -41,7 +41,7 @@ function FilterRow({ filter, handleEdit, openEditModal, openRemoveModal }: Filte
 
             <td className="border">
                 <ActionButton
-                    color="bg-yellow-400 hover:bg-yellow-700"
+                    color="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-700 dark:hover:bg-yellow-800"
                     onClick={() => { openEditModal(filter) }}>
                     <icons.Edit />
                 </ActionButton>
@@ -50,7 +50,7 @@ function FilterRow({ filter, handleEdit, openEditModal, openRemoveModal }: Filte
 
             <td className="border">
                 <ActionButton
-                    color="bg-red-500 hover:bg-red-700"
+                    color="bg-red-500 hover:bg-red-500 dark:bg-red-700 dark:hover:bg-red-800"
                     onClick={() => { openRemoveModal(filter) }}>
                     <icons.Remove />
                 </ActionButton>

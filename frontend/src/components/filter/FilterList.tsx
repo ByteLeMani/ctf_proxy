@@ -105,7 +105,7 @@ export default function FilterList() {
     return <>
         <div className="flex justify-between">
             <p className="text-4xl">Filters</p>
-            <ActionButton color='bg-blue-400' onClick={openAddModal}><icons.Add /></ActionButton>
+            <ActionButton color='bg-blue-400 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800' onClick={openAddModal}><icons.Add /></ActionButton>
         </div>
         <Modal
          ref={editModal}

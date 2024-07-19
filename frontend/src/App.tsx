@@ -16,11 +16,11 @@ function App() {
   
   return (
     <>
-     <div className="main w-9/12 mx-auto relative h-svh">
+     <div className="main w-9/12 mx-auto relative h-svh dark:text-[#d8d4cf]">
             <h1 className="text-6xl text-center">CTF-Proxy</h1>
             <div className="flex justify-between">
                 <p className="text-4xl">Active Services</p>
-                <ActionButton color='bg-blue-400'><Icons.Add/></ActionButton>
+                <ActionButton color='bg-blue-400 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800'><Icons.Add/></ActionButton>
             </div>
             <div className="list-services mt-3 space-y-2 mb-3">
                 {
