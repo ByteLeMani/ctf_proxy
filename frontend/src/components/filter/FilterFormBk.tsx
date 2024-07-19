@@ -3,11 +3,8 @@ import { Filter } from "../../models/Filter";
 import { editor } from "monaco-editor";
 import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
 import CodeEditor from "../code-editor/CodeEditor";
-import HttpForm from "./form/HttpForm";
-import Divider from "../Divider";
 
 var filter_types = [
-    "Standard",
     "PostBody",
     "Cookie",
     "URL",
@@ -27,12 +24,12 @@ const listPorts = service_ports.map(port => <option value={port} key={port}>{por
 
 interface FormProps {
     filter: Filter | null;
-    onSubmit: (filter: Filter) => void;
-    editor?: React.Ref<MonacoEditorReactComp>;
+    onSubmit: (filter:Filter) => void;
+    editor?:React.Ref<MonacoEditorReactComp>;
 }
 
 // TODO: remove this after code editor fix
-export interface CodeEditorState extends EventTarget {
+export interface CodeEditorState{
     target: {
         name: string;
         value: string;
@@ -43,9 +40,9 @@ export interface CodeEditorState extends EventTarget {
 export default function Form({ filter, onSubmit }: FormProps) {
     const [_editor, setEditor] = useState<editor.IStandaloneCodeEditor>();
     const [formState, setFormState] = useState<Filter | null>(filter);
+    
 
-
-    useEffect(() => {
+    useEffect(()=>{
         setFormState(filter);
     }, [filter]);
 
@@ -53,44 +50,24 @@ export default function Form({ filter, onSubmit }: FormProps) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (formState) {
-            onSubmit(formState);
+          onSubmit(formState);
         }
     };
 
-    const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement> | CodeEditorState) => {
+    const handleChange = (e:  ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement> | CodeEditorState) => {
         const { name, value } = e.target;
         // if you see errors in your editor is just typescript intellisense not understanding stuff
         if (formState !== null) {
-            setFormState((prevState) => ({
-                ...prevState,
-                [name]: value,
-            }));
+          setFormState((prevState) => ({
+            ...prevState,
+            [name]: value,
+          }));
         }
-    };
+      };
 
 
     return <div className="w-full flex flex-col items-center">
         <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
-            <label className="form-control w-full flex flex-col max-w-xs">
-                <div className="flex flex-row items-center justify-center">
-                    <div className="form-control">
-                        <label className="label cursor-pointer">
-                            <span className="label-text mx-2">In</span>
-                            <input type="radio" name="direction" value='in' className="radio checked:bg-red-500"
-                            checked={formState?.direction==='in'} 
-                            onChange={handleChange}/>
-                        </label>
-                    </div>
-                    <div className="form-control">
-                        <label className="label cursor-pointer">
-                            <input type="radio" name="direction"  value='out' className="radio checked:bg-blue-500" 
-                            checked={formState?.direction==='out'}
-                            onChange={handleChange}/>
-                            <span className="label-text mx-2">Out</span>
-                        </label>
-                    </div>
-                </div>
-            </label>
             <label className="form-control w-full max-w-xs">
                 <div className="label">
                     <span className="label-text">Pick the service</span>
@@ -114,13 +91,11 @@ export default function Form({ filter, onSubmit }: FormProps) {
                 </select>
             </label>
 
-
             <label className="form-control w-full flex flex-col items-center">
 
                 <div className="label">
-                    <span className="label-text">Edit Pattern</span>
+                    <span className="label-text">Edit pattern</span>
                 </div>
-
 
                 {
                     formState?.type.includes("Custom") ?
@@ -129,7 +104,11 @@ export default function Form({ filter, onSubmit }: FormProps) {
                             pattern={formState?.pattern}
                             setEditor={setEditor} />
                         :
-                        <HttpForm setFormState={setFormState} formState={formState} handleChange={handleChange}/>
+                        <textarea className="textarea textarea-bordered h-24" placeholder="Type here the pattern..."
+                            value={formState?.pattern}
+                            name='pattern'
+                            onChange={handleChange} >
+                        </textarea>
                 }
 
 

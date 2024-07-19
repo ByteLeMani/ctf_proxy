@@ -6,13 +6,13 @@ import icons from "../../icons/icons";
 import Modal from "./modals/Modal";
 import Remove from "./modals/RemoveModal";
 
-const templateItem:Filter = { id: 0, port: 3000, type: 'PostBody', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true };
+const templateItem:Filter = { id: 0, port: 3000, type: 'Standard', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true, direction: 'in' };
 
 export default function FilterList() {
     const [items, setItems] = useState<Filter[]>([
         templateItem,
-        { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false },
-        { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true },
+        { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false, direction: 'in' },
+        { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true, direction: 'out' },
     ]);
 
     const [selectedItem, setSelectedItem] = useState<Filter | null>(templateItem);
