@@ -17,7 +17,7 @@ When you edit anything inside `/src` or `/language-server` it just sync the corr
     - [x] Change pattern
     - [x] Custom pattern with code editor ( :warning: still WIP)
         - [x] Intellisense support
-        - [ ] Proxy library support
+        - [x] Proxy library support
     - [ ] Additional options (specific header, param length etc.)
     - [x] Change port
     - [x] HTTP Support

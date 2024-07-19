@@ -6,13 +6,17 @@ import CodeEditor from "../code-editor/CodeEditor";
 import HttpForm from "./form/HttpForm";
 import Divider from "../Divider";
 
+// var filter_types = [
+//     "Standard",
+//     "PostBody",
+//     "Cookie",
+//     "URL",
+//     "Headers",
+//     "Everywhere",
+//     "Custom"
+// ];
 var filter_types = [
     "Standard",
-    "PostBody",
-    "Cookie",
-    "URL",
-    "Headers",
-    "Everywhere",
     "Custom"
 ];
 const listTypes = filter_types.map(filter => <option value={filter} key={filter}>{filter}</option>);

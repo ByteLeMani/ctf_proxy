@@ -57,7 +57,6 @@ function CodeEditor({pattern, setEditor}:EditorProps){
         onLoad={(wrapper: MonacoEditorLanguageClientWrapper) => {
             // console.log(`Loaded ${wrapper.reportStatus().join('\n').toString()}`);
             setEditor(wrapper.getEditor());
-                
             
         }}
         onError={(e) => {

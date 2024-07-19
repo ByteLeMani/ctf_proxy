@@ -8,11 +8,23 @@ import Remove from "./modals/RemoveModal";
 
 const templateItem:Filter = { id: 0, port: 3000, type: 'Standard', pattern: '/"username": "\w{"{51,}"}"/i', isActive: true, direction: 'in' };
 
+const codeExample:string = `def username(self, stream: HTTPStream):
+    """
+    block usernames longer than 10 characters for register endpoint
+    """
+    message = stream.current_http_message
+    if "register" in message.url and "POST" in message.method:
+        username = message.parameters.get("username")
+        if len(username) > 10:
+            return True
+    else:
+        return False`
+
 export default function FilterList() {
     const [items, setItems] = useState<Filter[]>([
         templateItem,
-        { id: 1, port: 4000, type: 'Cookie', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false, direction: 'in' },
-        { id: 2, port: 5000, type: 'Everywhere', pattern: 'topolino', isActive: true, direction: 'out' },
+        { id: 1, port: 4000, type: 'Standard', pattern: 'AAAAAAAAAAAAAAAAAAAA', isActive: false, direction: 'in' },
+        { id: 2, port: 5000, type: 'Custom', pattern: codeExample, isActive: true, direction: 'out' },
     ]);
 
     const [selectedItem, setSelectedItem] = useState<Filter | null>(templateItem);

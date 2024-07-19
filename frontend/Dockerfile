@@ -11,5 +11,8 @@ RUN npm install -g npm
 RUN npm install -g pnpm
 RUN pnpm install
 
+# this will add proxy library
 
 COPY . /app
+
+RUN ./prepare.sh

@@ -22,7 +22,8 @@ export const createUserConfig = (workspaceRoot: string, code: string, codeUri: s
             port: 30001,
             path: 'pyright',
             extraParams: {
-                authorization: 'UserAuth'
+                authorization: 'UserAuth',
+                typeCheckingMode: 'basic'
             },
             secured: false,
             startOptions: {
@@ -31,6 +32,7 @@ export const createUserConfig = (workspaceRoot: string, code: string, codeUri: s
                         ['pyright.restartserver', 'pyright.organizeimports'].forEach((cmdName) => {
                             vscode.commands.registerCommand(cmdName, (...args: unknown[]) => {
                                 languageClient?.sendRequest('workspace/executeCommand', { command: cmdName, arguments: args });
+                                
                             });
                         });
                     }, 250);
@@ -70,10 +72,13 @@ export const createUserConfig = (workspaceRoot: string, code: string, codeUri: s
                     json: JSON.stringify({
                         'workbench.colorTheme': 'Default Dark Modern',
                         'editor.guides.bracketPairsHorizontal': 'active',
-                        'editor.wordBasedSuggestions': 'off'
+                        'editor.wordBasedSuggestions': 'off',
+                        'editor.minimap.enabled': false,
+                        "python.analysis.typeCheckingMode": "off",
                     })
                 },
-                useDiffEditor: false
+                useDiffEditor: false,
+           
             }
         },
         loggerConfig: {
